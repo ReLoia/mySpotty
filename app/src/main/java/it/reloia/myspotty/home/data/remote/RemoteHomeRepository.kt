@@ -21,4 +21,8 @@ class RemoteHomeRepository (
     override suspend fun getLastListened(): LastListened {
         TODO("Not yet implemented")
     }
+
+    override suspend fun addSOTD(url: String, password: String) {
+        return apiService.addSOTD(password, url)
+    }
 }

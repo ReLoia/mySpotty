@@ -11,6 +11,7 @@ import it.reloia.myspotty.home.domain.model.LastListened
 import it.reloia.myspotty.home.domain.model.SOTD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class HomeViewModel (
                 getCurrentSong()
                 getSOTD()
                 //getLastListened()
-                println("Refreshed")
+                delay(200L)
                 isRefreshing = false
             }
         }
@@ -54,7 +55,6 @@ class HomeViewModel (
     private fun getCurrentSong() {
         viewModelScope.launch (Dispatchers.IO) {
             try {
-                println("Trying to get current song");
                 _currentSong.value = repository.getCurrentSong()
             } catch (e: IOException) {
                 println("Network error in 'getCurrentSong'. Please check your connection. Error: $e")
@@ -78,6 +78,16 @@ class HomeViewModel (
                 _lastListened.value = repository.getLastListened()
             } catch (e: IOException) {
                 println("Network error in 'getLastListened'. Please check your connection. Error: $e")
+            }
+        }
+    }
+
+    fun addSOTD(url: String, password: String) {
+        viewModelScope.launch (Dispatchers.IO) {
+            try {
+                repository.addSOTD(url, password)
+            } catch (e: IOException) {
+                println("Network error in 'addSOTD'. Please check your connection. Error: $e")
             }
         }
     }

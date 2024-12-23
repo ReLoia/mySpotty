@@ -86,77 +86,27 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
 
             Spacer(
                 modifier = Modifier
-                    .height(6.dp)
+                    .height(42.dp)
             )
 
             Column(
                 modifier = Modifier
-                    .padding(top = 38.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    "songs of the day",
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(bottom = 6.dp)
-                )
+                SOTDWidget(sotd, homeViewModel)
 
-                // TODO: move to a separate composable and make the values dynamic
-                LazyRow(
-                    Modifier
-                        .padding(bottom = 24.dp)
-                        .fillMaxWidth()
-                ) {
-                    items(sotd.size) {
-                        // TODO: move to a different composable
-                        // TODO: make a bottom sheet with the song details and buttons to remove from SOTD
-                        Card(
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(100.dp)
-                                .clickable { println("Clicked on SOTD song: ${sotd[it]}") },
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFF2E2A2A)
-                            )
-                        ) {
-                            AsyncImage(
-                                model = sotd[it].album,
-                                contentDescription = "Album image",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(RoundedCornerShape(8.dp))
-                            )
-                        }
-                    }
-                }
-
-                // TODO: make the value dynamic and not hardcoded, also make it a separate composable, also hide it if the song on top is not playing (aka. currentSong == lastSong)
-                Text(
-                    "last listened song",
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(bottom = 6.dp)
-                )
-
-//            LazyRow (
-//                Modifier
-//                    .padding(bottom = 24.dp)
-//                    .fillMaxWidth()
-//            ) {
-//                items(10) {
-//                    Card(
-//                        modifier = Modifier
-//                            .padding(8.dp)
-//                            .size(100.dp),
-//                        colors = CardDefaults.cardColors(
-//                            containerColor = Color(0xFF2E2A2A)
-//                        )
-//                    ) {
-//                        Text("Song")
-//                    }
-//                }
-//            }
+                /**
+                 * lastListened = LastListened(
+                 *                     name = "Last listened song",
+                 *                     album_image = "https://i.scdn.co/image/ab67616d0000b273f4b3b3b3b3b3b3b3b3b3b3b3",
+                 *                     song_link = "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V?si=8b6e4",
+                 *                     album_name = "Album name",
+                 *                     author = "Author",
+                 *                     explicit = false,
+                 *                 )
+                 */
+                LastListenedWidget(viewModel = homeViewModel)
             }
         }
     }
