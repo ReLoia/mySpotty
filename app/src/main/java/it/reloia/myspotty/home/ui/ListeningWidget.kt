@@ -1,5 +1,7 @@
 package it.reloia.myspotty.home.ui
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +33,7 @@ import it.reloia.myspotty.home.domain.model.CurrentSong
 
 
 @Composable
-fun ListeningWidget(currentSong: CurrentSong?) {
+fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -62,17 +64,26 @@ fun ListeningWidget(currentSong: CurrentSong?) {
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Gray) // Gray background if no image
-                )
             }
+
+            val context = LocalContext.current
 
             IconButton(
                 onClick = {
-                    println("Adding to SOTD: $currentSong")
+                    val password = context.getSharedPreferences("MySpotty", Context.MODE_PRIVATE)
+                        .getString("password", null)
+
+                    if (currentSong == null) {
+                        Toast.makeText(context, "No song playing", Toast.LENGTH_SHORT).show()
+                        return@IconButton
+                    }
+
+                    if (password == null) {
+                        Toast.makeText(context, "Please set the password in the settings", Toast.LENGTH_SHORT).show()
+                        return@IconButton
+                    }
+
+                    viewModel.addSOTD(currentSong.song_link, password)
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -90,11 +101,11 @@ fun ListeningWidget(currentSong: CurrentSong?) {
             }
         }
 
-        if (currentSong == null) return;
+        if (currentSong == null) return
 
         Spacer(
             modifier = Modifier
-                .height(24.dp)
+                .height(16.dp)
         )
 
         val clampedProgress = currentSong.progress / currentSong.duration.toFloat()
@@ -102,7 +113,7 @@ fun ListeningWidget(currentSong: CurrentSong?) {
         Box(
             modifier = Modifier
                 .height(8.dp)
-                .width(290.dp)
+                .width(280.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF2E2A2A))
         ) {
