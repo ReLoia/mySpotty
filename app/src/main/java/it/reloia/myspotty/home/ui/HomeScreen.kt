@@ -1,5 +1,6 @@
 package it.reloia.myspotty.home.ui
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -57,12 +58,19 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
                     .height(6.dp)
             )
 
-            AutoScrollingMarqueeText(
-                currentSong?.name ?: "No song playing",
-                modifier = Modifier
-                    .padding(horizontal = 14.dp),
+//            AutoScrollingMarqueeText(
+//                currentSong?.name ?: "No song playing",
+//                modifier = Modifier
+//                    .padding(horizontal = 14.dp),
+//                fontSize = 24.sp,
+//                color = Color.White
+//            )
+            Text(
+                "  " + (currentSong?.name ?: "No song playing"),
                 fontSize = 24.sp,
-                color = Color.White
+                modifier = Modifier
+//                    .padding(start = 14.dp)
+                    .basicMarquee()
             )
             Text(
                 currentSong?.album_name ?: "No album",
