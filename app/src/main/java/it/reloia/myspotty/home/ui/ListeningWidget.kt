@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,12 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import it.reloia.myspotty.home.ui.domain.model.CurrentSong
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import it.reloia.myspotty.home.domain.model.CurrentSong
 
 
 @Composable
-fun ListeningWidget(currentSong: CurrentSong) {
+fun ListeningWidget(currentSong: CurrentSong?) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -44,8 +49,31 @@ fun ListeningWidget(currentSong: CurrentSong) {
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color(0xFF2E2A2A)),
         ) {
+            if (currentSong != null) {
+                AsyncImage(
+                    model = ImageRequest
+                        .Builder(LocalContext.current)
+                        .data(currentSong.album_image)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "Album image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Gray) // Gray background if no image
+                )
+            }
+
             IconButton(
-                onClick = { /* do something */ },
+                onClick = {
+                    println("Adding to SOTD: $currentSong")
+                },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(8.dp)
@@ -61,6 +89,8 @@ fun ListeningWidget(currentSong: CurrentSong) {
                 )
             }
         }
+
+        if (currentSong == null) return;
 
         Spacer(
             modifier = Modifier
