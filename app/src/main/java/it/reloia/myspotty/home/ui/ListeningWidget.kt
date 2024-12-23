@@ -67,7 +67,7 @@ fun ListeningWidget(currentSong: CurrentSong) {
                 .height(24.dp)
         )
 
-        val clampedProgress = .4f.coerceIn(0f, 1f)
+        val clampedProgress = currentSong.progress / currentSong.duration.toFloat()
 
         Box(
             modifier = Modifier

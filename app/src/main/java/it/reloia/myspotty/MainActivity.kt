@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,7 +20,6 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import it.reloia.myspotty.home.ui.HomeScreen
 import it.reloia.myspotty.ui.theme.DarkRed
 import it.reloia.myspotty.ui.theme.MySpottyTheme
@@ -63,7 +61,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 colors = topAppBarColors(
-                                    containerColor = DarkRed,
+                                    containerColor = DarkRed.copy(alpha = 0.3f),
                                     titleContentColor = Color.White
                                 )
                             )
@@ -71,12 +69,10 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                         Surface(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding)
-                                .padding(horizontal = 14.dp),
+                                .fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            HomeScreen()
+                            HomeScreen(innerPadding)
                         }
                     }
                 }
