@@ -1,5 +1,6 @@
 package it.reloia.myspotty.home.ui
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,6 +34,12 @@ class HomeViewModel (
     private val _lastListened = MutableStateFlow<LastListened?>(null)
     val lastListened: StateFlow<LastListened?> = _lastListened
 
+    private val _isSOTDSheetOpen = mutableStateOf(false)
+    val isSOTDSheetOpen: State<Boolean> = _isSOTDSheetOpen
+
+    private val _currentSelectedSOTD = mutableStateOf<SOTD?>(null)
+    val currentSelectedSOTD: State<SOTD?> = _currentSelectedSOTD
+
     // TODO: add support for websockets using okhttp
 
     init {
@@ -55,6 +62,18 @@ class HomeViewModel (
     fun refresh() {
         refreshRequests.trySend(Unit)
     }
+
+    fun toggleSOTDSheet(sotd: SOTD?) {
+        if (sotd == null) {
+            _currentSelectedSOTD.value = null
+            _isSOTDSheetOpen.value = false
+        } else {
+            _currentSelectedSOTD.value = sotd
+            _isSOTDSheetOpen.value = true
+        }
+    }
+
+    // remote methods
 
     private fun getCurrentSong() {
         viewModelScope.launch (Dispatchers.IO) {
@@ -104,6 +123,16 @@ class HomeViewModel (
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 repository.removeSOTD(url, password)
+            } catch (e: IOException) {
+                println("Network error in 'removeFromSOTD'. Please check your connection. Error: $e")
+            }
+        }
+    }
+
+    fun removeFromSOTD(date: Long, password: String) {
+        viewModelScope.launch (Dispatchers.IO) {
+            try {
+                repository.removeSOTD(date, password)
             } catch (e: IOException) {
                 println("Network error in 'removeFromSOTD'. Please check your connection. Error: $e")
             }

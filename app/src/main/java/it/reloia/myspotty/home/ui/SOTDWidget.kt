@@ -48,7 +48,7 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
                 modifier = Modifier
                     .padding(8.dp)
                     .size(96.dp)
-                    .clickable { println("Clicked on SOTD song: ${sotd[it]}") },
+                    .clickable { viewModel.toggleSOTDSheet(sotd[it]) },
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFF2E2A2A)
                 )

@@ -92,16 +92,6 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
             ) {
                 SOTDWidget(sotd, homeViewModel)
 
-                /**
-                 * lastListened = LastListened(
-                 *                     name = "Last listened song",
-                 *                     album_image = "https://i.scdn.co/image/ab67616d0000b273f4b3b3b3b3b3b3b3b3b3b3b3",
-                 *                     song_link = "https://open.spotify.com/track/3ZFTkvIE7kyPt6Nu3PEa7V?si=8b6e4",
-                 *                     album_name = "Album name",
-                 *                     author = "Author",
-                 *                     explicit = false,
-                 *                 )
-                 */
                 if (lastListened != null) LastListenedWidget(lastListened, viewModel = homeViewModel)
             }
         }

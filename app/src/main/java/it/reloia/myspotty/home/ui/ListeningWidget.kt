@@ -126,7 +126,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
         Box(
             modifier = Modifier
                 .height(8.dp)
-                .width(280.dp)
+                .width(screenWidth * 0.7f)
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF2E2A2A))
         ) {
