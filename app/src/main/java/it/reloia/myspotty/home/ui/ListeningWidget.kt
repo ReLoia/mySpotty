@@ -20,6 +20,10 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,11 +36,12 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import it.reloia.myspotty.home.domain.model.CurrentSong
 
-
 @Composable
 fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
+
+    var liked by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -86,7 +91,12 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                         return@IconButton
                     }
 
-                    viewModel.addSOTD(currentSong.song_link, password)
+                    if (liked)
+                        viewModel.addToSOTD(currentSong.song_link, password)
+                    else
+                        viewModel.removeFromSOTD(currentSong.song_link, password)
+
+                    liked = !liked
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -98,7 +108,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                 Icon(
                     Icons.Default.Favorite,
                     contentDescription = "Favorite",
-                    tint = Color.White,
+                    tint = if (liked) Color.Red else Color.White,
                     modifier = Modifier.size(19.dp)
                 )
             }
@@ -111,7 +121,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                 .height(16.dp)
         )
 
-        val clampedProgress = currentSong.progress / currentSong.duration.toFloat()
+        val clampedProgress = if (currentSong.progress > 0) currentSong.progress / currentSong.duration.toFloat() else 1f
 
         Box(
             modifier = Modifier

@@ -21,6 +21,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,9 +87,11 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
+    var liked by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
-            .size(screenWidth * 0.6f)
+            .size(screenWidth * 0.74f)
             .clip(RoundedCornerShape(8.dp))
             .background(Color(0xFF2E2A2A)),
     ) {
@@ -121,7 +127,12 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
                     return@IconButton
                 }
 
-                viewModel.addSOTD(lastListened.song_link, password)
+                if (liked)
+                    viewModel.addToSOTD(lastListened.song_link, password)
+                else
+                    viewModel.removeFromSOTD(lastListened.song_link, password)
+
+                liked = !liked
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -133,7 +144,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
             Icon(
                 Icons.Default.Favorite,
                 contentDescription = "Favorite",
-                tint = Color.White,
+                tint = if (liked) Color.Red else Color.White,
                 modifier = Modifier.size(19.dp)
             )
         }
