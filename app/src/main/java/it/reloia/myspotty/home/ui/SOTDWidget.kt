@@ -60,7 +60,7 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
                             .diskCachePolicy(CachePolicy.ENABLED)
                             .networkCachePolicy(CachePolicy.READ_ONLY)
                             .build(),
-                        contentDescription = "Album image",
+                        contentDescription = sotd[it].name + " album cover",
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(8.dp))

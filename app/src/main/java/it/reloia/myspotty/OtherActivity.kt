@@ -21,7 +21,7 @@ class OtherActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var currentPage = "Test"
+        var currentPage = "test"
 
         val sharedText = intent?.getStringExtra(Intent.EXTRA_TEXT)
         if (sharedText != null && sharedText.contains("open.spotify.com", ignoreCase = true)) {

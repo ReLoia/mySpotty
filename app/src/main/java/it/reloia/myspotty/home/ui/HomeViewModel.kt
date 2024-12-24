@@ -62,6 +62,7 @@ class HomeViewModel (
                 _currentSong.value = repository.getCurrentSong()
             } catch (e: IOException) {
                 println("Network error in 'getCurrentSong'. Please check your connection. Error: $e")
+                _currentSong.value = null
             }
         }
     }
@@ -89,12 +90,22 @@ class HomeViewModel (
         }
     }
 
-    fun addSOTD(url: String, password: String) {
+    fun addToSOTD(url: String, password: String) {
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 repository.addSOTD(url, password)
             } catch (e: IOException) {
-                println("Network error in 'addSOTD'. Please check your connection. Error: $e")
+                println("Network error in 'addToSOTD'. Please check your connection. Error: $e")
+            }
+        }
+    }
+
+    fun removeFromSOTD(url: String, password: String) {
+        viewModelScope.launch (Dispatchers.IO) {
+            try {
+                repository.removeSOTD(url, password)
+            } catch (e: IOException) {
+                println("Network error in 'removeFromSOTD'. Please check your connection. Error: $e")
             }
         }
     }

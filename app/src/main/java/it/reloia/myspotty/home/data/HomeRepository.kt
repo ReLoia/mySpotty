@@ -9,4 +9,5 @@ interface HomeRepository {
     suspend fun getSOTD(): List<SOTD>
     suspend fun getLastListened(): LastListened?
     suspend fun addSOTD(url: String, password: String)
+    suspend fun removeSOTD(url: String, password: String)
 }
