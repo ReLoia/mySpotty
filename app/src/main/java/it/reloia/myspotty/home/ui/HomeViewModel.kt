@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.EOFException
 import java.io.IOException
 
 class HomeViewModel (
@@ -32,16 +33,19 @@ class HomeViewModel (
     private val _lastListened = MutableStateFlow<LastListened?>(null)
     val lastListened: StateFlow<LastListened?> = _lastListened
 
+    // TODO: add support for websockets using okhttp
+
     init {
         getCurrentSong()
         getSOTD()
+        getLastListened()
 
         viewModelScope.launch {
             for (unit in refreshRequests) {
                 isRefreshing = true
                 getCurrentSong()
                 getSOTD()
-                //getLastListened()
+                getLastListened()
                 delay(200L)
                 isRefreshing = false
             }
@@ -72,10 +76,13 @@ class HomeViewModel (
         }
     }
 
-    fun getLastListened() {
+    private fun getLastListened() {
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 _lastListened.value = repository.getLastListened()
+            } catch (e: EOFException) {
+                _lastListened.value = null
+                println("EOF error in 'getLastListened'. Please check your connection. Error: $e")
             } catch (e: IOException) {
                 println("Network error in 'getLastListened'. Please check your connection. Error: $e")
             }

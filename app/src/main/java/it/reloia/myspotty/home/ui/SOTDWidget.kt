@@ -1,5 +1,6 @@
 package it.reloia.myspotty.home.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,13 +17,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import it.reloia.myspotty.home.domain.model.SOTD
 
 @Composable
@@ -52,7 +55,11 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AsyncImage(
-                        model = sotd[it].album,
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(sotd[it].album)
+                            .diskCachePolicy(CachePolicy.ENABLED)
+                            .networkCachePolicy(CachePolicy.READ_ONLY)
+                            .build(),
                         contentDescription = "Album image",
                         modifier = Modifier
                             .fillMaxSize()
@@ -63,18 +70,16 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
                         sotd[it].name,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
+                            .background(Color(0x60000000))
                             .padding(horizontal = 4.dp)
+                            .fillMaxWidth()
                             .basicMarquee(
                                 iterations = Int.MAX_VALUE
                             ),
                         style = TextStyle(
-                            shadow = Shadow(
-                                color = Color.Black,
-                                offset = Offset.Zero,
-                                blurRadius = 10f
-                            ),
                             color = Color.White,
-                            fontSize = 14.sp
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center
                         )
                     )
                 }

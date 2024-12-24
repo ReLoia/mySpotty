@@ -13,7 +13,7 @@ interface MySpottyApiService {
     suspend fun getCurrentSong(): CurrentSong?
 
     @GET("api/last")
-    suspend fun getLastListened(): LastListened
+    suspend fun getLastListened(): LastListened?
 
     @GET("sotd")
     suspend fun getSOTD(): List<SOTD>

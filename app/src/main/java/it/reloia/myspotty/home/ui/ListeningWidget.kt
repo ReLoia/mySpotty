@@ -41,7 +41,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
     ) {
         Spacer(
             modifier = Modifier
-                .height(14.dp)
+                .height(2.dp)
         )
 
         Box(

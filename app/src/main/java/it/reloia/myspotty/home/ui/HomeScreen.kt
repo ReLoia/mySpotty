@@ -16,16 +16,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
-    val currentSong = homeViewModel.currentSong.collectAsState().value
-    val sotd = homeViewModel.sotd.collectAsState().value
+    val currentSong by homeViewModel.currentSong.collectAsState()
+    val sotd by homeViewModel.sotd.collectAsState()
+    val lastListened by homeViewModel.lastListened.collectAsState()
 
     PullToRefreshBox (
         onRefresh = {
@@ -42,32 +45,38 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
                 .padding(paddingValues)
         ) {
             Text(
-                "   " + (currentSong?.author ?: "No author"),
+                (currentSong?.author ?: "No author"),
                 fontSize = 15.sp,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .basicMarquee(
                         iterations = Int.MAX_VALUE,
                         spacing = MarqueeSpacing(80.dp)
-                    )
+                    ),
+                textAlign = TextAlign.Center
             )
             Text(
-                "  " + (currentSong?.name ?: "No song playing"),
+                (currentSong?.name ?: "No song playing"),
                 fontSize = 24.sp,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .basicMarquee(
                         iterations = Int.MAX_VALUE,
                         spacing = MarqueeSpacing(80.dp)
-                    )
+                    ),
+                textAlign = TextAlign.Center
             )
             Text(
-                "   " + (currentSong?.album_name ?: "No album"),
+                (currentSong?.album_name ?: "No album"),
                 fontSize = 16.sp,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .offset(y = (-6).dp)
                     .basicMarquee(
                         iterations = Int.MAX_VALUE,
                         spacing = MarqueeSpacing(80.dp)
-                    )
+                    ),
+                textAlign = TextAlign.Center
             )
 
             ListeningWidget(currentSong, homeViewModel)
@@ -96,7 +105,7 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
                  *                     explicit = false,
                  *                 )
                  */
-                LastListenedWidget(viewModel = homeViewModel)
+                if (lastListened != null) LastListenedWidget(lastListened, viewModel = homeViewModel)
             }
         }
     }

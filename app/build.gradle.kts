@@ -56,7 +56,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // HTTP Requests
+    // Status Bar
+    implementation(libs.accompanist.systemuicontroller)
+
+    // HTTP Requests - Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
