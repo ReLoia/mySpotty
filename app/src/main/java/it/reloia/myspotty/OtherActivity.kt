@@ -28,6 +28,7 @@ class OtherActivity : ComponentActivity() {
             currentPage = "spotify"
         }
 
+        println("OtherActivity: $currentPage ; $sharedText")
 
         enableEdgeToEdge()
         setContent {
@@ -37,11 +38,11 @@ class OtherActivity : ComponentActivity() {
                 color = Color.Transparent
             )
 
-            MySpottyTheme {
+            MySpottyTheme (dynamicColor = false, darkTheme = true) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Text(
                         text = "Hello, OtherActivity!",
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
                     )
                 }
             }

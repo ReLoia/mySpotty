@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                 )
             )
 
-            MySpottyTheme(dynamicColor = false) {
+            MySpottyTheme(dynamicColor = false, darkTheme = true) {
                 val context = LocalContext.current
                 Surface(
                     modifier = Modifier.fillMaxSize(),

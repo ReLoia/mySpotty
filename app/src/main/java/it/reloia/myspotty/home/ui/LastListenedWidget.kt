@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,7 +58,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
     )
     Text(
         (lastListened?.name ?: "No song playing"),
-        fontSize = 20.sp,
+        fontSize = 19.sp,
         modifier = Modifier
             .fillMaxWidth()
             .basicMarquee(
@@ -68,7 +69,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
     )
     Text(
         (lastListened?.album_name ?: "No album"),
-        fontSize = 14.sp,
+        fontSize = 13.sp,
         modifier = Modifier
             .fillMaxWidth()
             .offset(y = (-6).dp)
@@ -79,9 +80,12 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
         textAlign = TextAlign.Center
     )
 
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
     Box(
         modifier = Modifier
-            .size(280.dp)
+            .size(screenWidth * 0.6f)
             .clip(RoundedCornerShape(8.dp))
             .background(Color(0xFF2E2A2A)),
     ) {

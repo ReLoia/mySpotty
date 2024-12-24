@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -34,6 +35,9 @@ import it.reloia.myspotty.home.domain.model.CurrentSong
 
 @Composable
 fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -46,8 +50,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
 
         Box(
             modifier = Modifier
-                .width(340.dp)
-                .height(340.dp)
+                .size(screenWidth * 0.8f)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color(0xFF2E2A2A)),
         ) {

@@ -34,11 +34,8 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
         onRefresh = {
             homeViewModel.refresh()
         },
-        isRefreshing = homeViewModel.isRefreshing,
-        modifier = Modifier
-            .padding(top = 20.dp)
+        isRefreshing = homeViewModel.isRefreshing
     ) {
-
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
@@ -46,7 +43,7 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
         ) {
             Text(
                 (currentSong?.author ?: "No author"),
-                fontSize = 15.sp,
+                fontSize = 14.sp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .basicMarquee(
@@ -57,7 +54,7 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
             )
             Text(
                 (currentSong?.name ?: "No song playing"),
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .basicMarquee(
@@ -68,7 +65,7 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
             )
             Text(
                 (currentSong?.album_name ?: "No album"),
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(y = (-6).dp)
