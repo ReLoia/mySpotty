@@ -34,7 +34,7 @@ fun HomeScreen(paddingValues: PaddingValues, homeViewModel: HomeViewModel) {
         onRefresh = {
             homeViewModel.refresh()
         },
-        isRefreshing = homeViewModel.isRefreshing
+        isRefreshing = homeViewModel.isRefreshing.value
     ) {
         Column(
             modifier = Modifier

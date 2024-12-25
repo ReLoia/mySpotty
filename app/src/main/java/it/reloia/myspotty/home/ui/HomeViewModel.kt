@@ -1,21 +1,25 @@
 package it.reloia.myspotty.home.ui
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.reloia.myspotty.home.data.HomeRepository
+import it.reloia.myspotty.home.data.remote.MySpottyAPIWebSocket
+import it.reloia.myspotty.home.data.remote.parseWebSocketResponse
 import it.reloia.myspotty.home.domain.model.CurrentSong
 import it.reloia.myspotty.home.domain.model.LastListened
 import it.reloia.myspotty.home.domain.model.SOTD
+import it.reloia.myspotty.home.domain.model.WebSocketResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.WebSocket
 import java.io.EOFException
 import java.io.IOException
 
@@ -23,7 +27,7 @@ class HomeViewModel (
     private val repository: HomeRepository
 ) : ViewModel() {
     private val refreshRequests = Channel<Unit>(1)
-    var isRefreshing by mutableStateOf(false)
+    var isRefreshing = mutableStateOf(false)
 
     private val _currentSong = MutableStateFlow<CurrentSong?>(null)
     val currentSong: StateFlow<CurrentSong?> = _currentSong
@@ -40,7 +44,8 @@ class HomeViewModel (
     private val _currentSelectedSOTD = mutableStateOf<SOTD?>(null)
     val currentSelectedSOTD: State<SOTD?> = _currentSelectedSOTD
 
-    // TODO: add support for websockets using okhttp
+    private val webSocketClient = OkHttpClient()
+    private var webSocket: WebSocket? = null
 
     init {
         getCurrentSong()
@@ -49,14 +54,16 @@ class HomeViewModel (
 
         viewModelScope.launch {
             for (unit in refreshRequests) {
-                isRefreshing = true
+                isRefreshing.value = true
                 getCurrentSong()
                 getSOTD()
                 getLastListened()
                 delay(200L)
-                isRefreshing = false
+                isRefreshing.value = false
             }
         }
+
+        connectToWebSocket()
     }
 
     fun refresh() {
@@ -74,6 +81,49 @@ class HomeViewModel (
     }
 
     // remote methods
+
+    // SOCKETS
+
+    fun startWebSocket() {
+        if (webSocket == null) {
+            connectToWebSocket()
+        }
+    }
+
+    fun stopWebSocket() {
+        webSocket?.close(1000, "User requested")
+        webSocket = null
+    }
+
+    private fun connectToWebSocket() {
+        val request = Request.Builder()
+            .url("wss://reloia.ddns.net/myspottyapi")
+            .build()
+
+        val listener = MySpottyAPIWebSocket { message ->
+            println("Received message: $message")
+            val parsed: WebSocketResponse = parseWebSocketResponse(message)
+            when (parsed) {
+//                is WebSocketResponse.Chat -> {
+//
+//                }
+//                is WebSocketResponse.Init -> {
+//
+//                }
+                is WebSocketResponse.ListeningStatus -> {
+                    _currentSong.value = parsed.data
+                }
+                else -> {
+                    // TODO: handle other types
+                }
+//                is WebSocketResponse.PaintCanvas -> TODO()
+            }
+        }
+
+        webSocket = webSocketClient.newWebSocket(request, listener)
+    }
+
+    // API
 
     private fun getCurrentSong() {
         viewModelScope.launch (Dispatchers.IO) {

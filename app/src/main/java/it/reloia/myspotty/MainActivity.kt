@@ -42,6 +42,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 
 class MainActivity : ComponentActivity() {
+    private val homeViewModel = HomeViewModel(
+        RemoteHomeRepository(
+            Retrofit.Builder()
+                // TODO: make the base url changeable from the API settings
+                .baseUrl("https://reloia.ddns.net/myspottyapi/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(MySpottyApiService::class.java),
+            this
+        )
+    )
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,18 +64,6 @@ class MainActivity : ComponentActivity() {
 
             systemUiController.setSystemBarsColor(
                 color = Color.Transparent
-            )
-
-            val homeViewModel = HomeViewModel(
-                RemoteHomeRepository(
-                    Retrofit.Builder()
-                        // TODO: make the base url changeable from the API settings
-                        .baseUrl("https://reloia.ddns.net/myspottyapi/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build()
-                        .create(MySpottyApiService::class.java),
-                    this
-                )
             )
 
             MySpottyTheme(dynamicColor = false, darkTheme = true) {
@@ -187,5 +187,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        homeViewModel.stopWebSocket()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        homeViewModel.startWebSocket()
     }
 }

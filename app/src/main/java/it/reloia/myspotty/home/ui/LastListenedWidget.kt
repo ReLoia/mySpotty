@@ -41,7 +41,6 @@ import it.reloia.myspotty.home.domain.model.LastListened
 
 @Composable
 fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
-    // TODO: make the value dynamic and not hardcoded, also make it a separate composable, also hide it if the song on top is not playing (aka. currentSong == lastSong)
     Text(
         "last listened song",
         fontSize = 18.sp,
