@@ -6,6 +6,7 @@ import okhttp3.WebSocketListener
 
 class MySpottyAPIWebSocket(
     private val onFailure: ((Throwable) -> Unit)? = null,
+    private val onClosing: ((code: Int, reason: String) -> Unit)? = null,
     private val onMessageReceived: (String) -> Unit
 ) : WebSocketListener() {
     override fun onMessage(webSocket: WebSocket, text: String) {
@@ -17,5 +18,10 @@ class MySpottyAPIWebSocket(
         super.onFailure(webSocket, t, response)
         println("WebSocket failure: $t")
         onFailure?.let { it(t) }
+    }
+
+    override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+        super.onClosing(webSocket, code, reason)
+        onClosing?.let { it(code, reason) }
     }
 }

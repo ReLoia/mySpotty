@@ -21,6 +21,9 @@ interface MySpottyApiService {
     @POST("sotd/url")
     suspend fun addSOTD(@Header("Authorization") password: String, @Body url: String)
 
-    @POST("sotd/remove")
+    @POST("sotd/remove/url")
     suspend fun removeSOTD(@Header("Authorization") password: String, @Body url: String)
+
+    @POST("sotd/remove/date")
+    suspend fun removeSOTD(@Header("Authorization") password: String, @Body date: Long)
 }

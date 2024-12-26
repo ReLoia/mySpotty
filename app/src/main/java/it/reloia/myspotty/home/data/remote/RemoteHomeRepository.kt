@@ -27,10 +27,10 @@ class RemoteHomeRepository (
     }
 
     override suspend fun removeSOTD(url: String, password: String) {
-        TODO("Not yet implemented")
+        return apiService.removeSOTD(password, url)
     }
 
     override suspend fun removeSOTD(date: Long, password: String) {
-        TODO("Not yet implemented")
+        return apiService.removeSOTD(password, date)
     }
 }

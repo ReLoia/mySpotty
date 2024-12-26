@@ -13,7 +13,6 @@ import it.reloia.myspotty.home.domain.model.LastListened
 import it.reloia.myspotty.home.domain.model.SOTD
 import it.reloia.myspotty.home.domain.model.WebSocketResponse
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,8 +64,6 @@ class HomeViewModel (
     private val _progress = mutableLongStateOf(0L)
     val progress: State<Long> = _progress
 
-    private var progressJob: Job? = null
-
     init {
         getCurrentSong()
         getSOTD()
@@ -77,13 +74,24 @@ class HomeViewModel (
                 isRefreshing.value = true
                 getCurrentSong()
                 getSOTD()
+                if (webSocket == null)
+                    connectToWebSocket()
                 getLastListened()
+
                 delay(200L)
                 isRefreshing.value = false
             }
         }
 
         connectToWebSocket()
+        viewModelScope.launch (Dispatchers.IO) {
+            while (true) {
+                if (_currentSong.value?.playing == true) {
+                    delay(1000L)
+                    _progress.longValue += 1000L
+                }
+            }
+        }
     }
 
     fun refresh() {
@@ -98,22 +106,6 @@ class HomeViewModel (
             _currentSelectedSOTD.value = sotd
             _isSOTDSheetOpen.value = true
         }
-    }
-
-    private fun startProgressJob(currentSong: CurrentSong) {
-        if (currentSong.playing) {
-            progressJob?.cancel()
-            progressJob = null
-
-            _progress.longValue = currentSong.progress
-            progressJob = viewModelScope.launch {
-                while (true) {
-                    delay(1000L)
-                    _progress.longValue += 1000L
-                }
-            }
-        }
-
     }
 
     // remote methods
@@ -141,7 +133,13 @@ class HomeViewModel (
             onFailure = { throwable ->
                 println("WebSocket failure: $throwable")
                 _isWebSocketConnected.value = false
-            }
+                webSocket = null
+            },
+            onClosing = { code, reason ->
+                println("WebSocket closing: $code, $reason")
+                _isWebSocketConnected.value = false
+                webSocket = null
+            },
         ) { message ->
             println("Received message: $message")
             when (val parsed: WebSocketResponse = parseWebSocketResponse(message)) {
@@ -184,7 +182,7 @@ class HomeViewModel (
             try {
                 _currentSong.value = repository.getCurrentSong()
 
-                startProgressJob(_currentSong.value!!)
+                _progress.longValue = _currentSong.value?.progress ?: 0L
             } catch (e: IOException) {
                 println("Network error in 'getCurrentSong'. Please check your connection. Error: $e")
                 _currentSong.value = null

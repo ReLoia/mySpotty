@@ -137,14 +137,14 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
                 .align(Alignment.BottomEnd)
                 .padding(8.dp)
                 .clip(CircleShape)
-                .size(34.dp)
+                .size(30.dp)
                 .background(Color(0xDE190E0E))
         ) {
             Icon(
                 Icons.Default.Favorite,
                 contentDescription = "Favorite",
                 tint = if (liked) Color.Red else Color.White,
-                modifier = Modifier.size(19.dp)
+                modifier = Modifier.size(16.dp)
             )
         }
     }
