@@ -102,14 +102,14 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                     .align(Alignment.BottomEnd)
                     .padding(8.dp)
                     .clip(CircleShape)
-                    .size(34.dp)
+                    .size(32.dp)
                     .background(Color(0xDE190E0E))
             ) {
                 Icon(
                     Icons.Default.Favorite,
                     contentDescription = "Favorite",
                     tint = if (liked) Color.Red else Color.White,
-                    modifier = Modifier.size(19.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
@@ -121,7 +121,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                 .height(16.dp)
         )
 
-        val clampedProgress = if (currentSong.progress > 0) currentSong.progress / currentSong.duration.toFloat() else 1f
+        val clampedProgress = if (viewModel.progress.value > 0) viewModel.progress.value / currentSong.duration.toFloat() else 1f
 
         Box(
             modifier = Modifier
@@ -134,7 +134,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(clampedProgress)
-                    .background(Color.White)
+                    .background(if (currentSong.playing) Color.White else Color.Gray)
             )
         }
     }

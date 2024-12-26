@@ -1,18 +1,27 @@
 package it.reloia.myspotty
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,10 +33,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -42,22 +53,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 
 class MainActivity : ComponentActivity() {
-    private val homeViewModel = HomeViewModel(
-        RemoteHomeRepository(
-            Retrofit.Builder()
-                // TODO: make the base url changeable from the API settings
-                .baseUrl("https://reloia.ddns.net/myspottyapi/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(MySpottyApiService::class.java),
-            this
-        )
-    )
+    private lateinit var homeViewModel: HomeViewModel
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        homeViewModel = HomeViewModel(
+            RemoteHomeRepository(
+                Retrofit.Builder()
+                    // TODO: make the base url changeable from the API settings
+                    .baseUrl("https://reloia.ddns.net/myspottyapi/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(MySpottyApiService::class.java),
+                this
+            )
+        )
 
         setContent {
             val systemUiController = rememberSystemUiController()
@@ -83,6 +96,18 @@ class MainActivity : ComponentActivity() {
                                     Text("no api set")
                                 },
                                 actions = {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(10.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (homeViewModel.isWebSocketConnected.value)
+                                                    Color(0xFF00FF00)
+                                                else
+                                                    Color(0xFFFF0000)
+                                            )
+                                    )
+
                                     IconButton(onClick = {
                                         val intent = Intent(context, OtherActivity::class.java)
                                         intent.putExtra("page", "settings")
@@ -120,30 +145,79 @@ class MainActivity : ComponentActivity() {
                                     containerColor = DarkRed
                                 ) {
                                     val currentSOTD = homeViewModel.currentSelectedSOTD.value
+                                    Row (
+                                        horizontalArrangement = Arrangement.End,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        if (currentSOTD?.url != null) {
+                                            val browserIntent = Intent(Intent.ACTION_VIEW)
+                                            browserIntent.data = Uri.parse(currentSOTD.url)
+                                            IconButton(
+                                                onClick = {
+                                                    context.startActivity(browserIntent)
+                                                },
+                                                modifier = Modifier
+                                                    .padding(end = 10.dp)
+                                                    .clip(CircleShape)
+                                                    .size(28.dp)
+                                                    .background(Color(0xFF915B1A))
+                                            ) {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.outline_globe_24),
+                                                    contentDescription = "Open in Browser",
+                                                    tint = Color.White,
+                                                    modifier = Modifier
+                                                        .size(19.dp)
+                                                )
+                                            }
+                                        }
+
+                                        val shareIntent = Intent(Intent.ACTION_SEND)
+                                        shareIntent.type = "text/plain"
+                                        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                                            "${currentSOTD?.name} by ${currentSOTD?.author}: ${currentSOTD?.url}"
+                                        )
+                                        IconButton(
+                                            onClick = {
+                                                context.startActivity(Intent.createChooser(shareIntent, "Share"))
+                                            },
+                                            modifier = Modifier
+                                                .padding(end = 10.dp)
+                                                .clip(CircleShape)
+                                                .size(28.dp)
+                                                .background(Color(0xFF1A7591))
+                                                .padding(end = 4.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Share,
+                                                contentDescription = "Share",
+                                                tint = Color.White,
+                                                modifier = Modifier
+                                                    .size(19.dp)
+                                            )
+                                        }
+                                    }
                                     Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(bottom = 32.dp)
                                     ) {
                                         Text(
-                                            "   " + (currentSOTD?.name ?: "No song selected"),
+                                            "  " + (currentSOTD?.name ?: "No song selected"),
                                             modifier = Modifier
                                                 .basicMarquee(
                                                     iterations = Int.MAX_VALUE,
                                                 ),
-                                            style = TextStyle(
-                                                fontSize = 22.sp,
-                                            )
+                                            fontSize = 22.sp,
                                         )
                                         Text(
-                                            "    " + (currentSOTD?.author ?: "No author"),
+                                            "   " + (currentSOTD?.author ?: "No author"),
                                             modifier = Modifier
                                                 .basicMarquee(
                                                     iterations = Int.MAX_VALUE
                                                 ),
-                                            style = TextStyle(
-                                                fontSize = 17.sp,
-                                            )
+                                            fontSize = 16.sp
                                         )
                                         Text(
                                             if (currentSOTD != null)
@@ -155,7 +229,8 @@ class MainActivity : ComponentActivity() {
                                                 }"
                                             else "No date",
                                             modifier = Modifier
-                                                .padding(start = 16.dp)
+                                                .padding(start = 12.dp),
+                                            fontSize = 15.sp
                                         )
 
                                         Button(
@@ -176,6 +251,10 @@ class MainActivity : ComponentActivity() {
                                             },
                                             modifier = Modifier
                                                 .padding(top = 16.dp)
+                                                .align(Alignment.CenterHorizontally),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xDE9F1414)
+                                            )
                                         ) {
                                             Text("Remove from SOTD")
                                         }

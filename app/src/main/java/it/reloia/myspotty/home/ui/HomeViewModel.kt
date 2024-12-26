@@ -1,6 +1,7 @@
 package it.reloia.myspotty.home.ui
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import it.reloia.myspotty.home.domain.model.LastListened
 import it.reloia.myspotty.home.domain.model.SOTD
 import it.reloia.myspotty.home.domain.model.WebSocketResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,8 +28,12 @@ import java.io.IOException
 class HomeViewModel (
     private val repository: HomeRepository
 ) : ViewModel() {
+    // LOCAL - Refresh
+
     private val refreshRequests = Channel<Unit>(1)
     var isRefreshing = mutableStateOf(false)
+
+    // REMOTE - API
 
     private val _currentSong = MutableStateFlow<CurrentSong?>(null)
     val currentSong: StateFlow<CurrentSong?> = _currentSong
@@ -38,14 +44,28 @@ class HomeViewModel (
     private val _lastListened = MutableStateFlow<LastListened?>(null)
     val lastListened: StateFlow<LastListened?> = _lastListened
 
+    // LOCAL - SOTD Sheet
+
     private val _isSOTDSheetOpen = mutableStateOf(false)
     val isSOTDSheetOpen: State<Boolean> = _isSOTDSheetOpen
 
     private val _currentSelectedSOTD = mutableStateOf<SOTD?>(null)
     val currentSelectedSOTD: State<SOTD?> = _currentSelectedSOTD
 
+    // REMOTE - WebSockets
+
+    private val _isWebSocketConnected = mutableStateOf(false)
+    val isWebSocketConnected: State<Boolean> = _isWebSocketConnected
+
     private val webSocketClient = OkHttpClient()
     private var webSocket: WebSocket? = null
+
+    // LOCAL - Progress bar
+
+    private val _progress = mutableLongStateOf(0L)
+    val progress: State<Long> = _progress
+
+    private var progressJob: Job? = null
 
     init {
         getCurrentSong()
@@ -80,6 +100,22 @@ class HomeViewModel (
         }
     }
 
+    private fun startProgressJob(currentSong: CurrentSong) {
+        if (currentSong.playing) {
+            progressJob?.cancel()
+            progressJob = null
+
+            _progress.longValue = currentSong.progress
+            progressJob = viewModelScope.launch {
+                while (true) {
+                    delay(1000L)
+                    _progress.longValue += 1000L
+                }
+            }
+        }
+
+    }
+
     // remote methods
 
     // SOCKETS
@@ -93,6 +129,7 @@ class HomeViewModel (
     fun stopWebSocket() {
         webSocket?.close(1000, "User requested")
         webSocket = null
+        _isWebSocketConnected.value = false
     }
 
     private fun connectToWebSocket() {
@@ -100,18 +137,34 @@ class HomeViewModel (
             .url("wss://reloia.ddns.net/myspottyapi")
             .build()
 
-        val listener = MySpottyAPIWebSocket { message ->
+        val listener = MySpottyAPIWebSocket (
+            onFailure = { throwable ->
+                println("WebSocket failure: $throwable")
+                _isWebSocketConnected.value = false
+            }
+        ) { message ->
             println("Received message: $message")
-            val parsed: WebSocketResponse = parseWebSocketResponse(message)
-            when (parsed) {
+            when (val parsed: WebSocketResponse = parseWebSocketResponse(message)) {
 //                is WebSocketResponse.Chat -> {
 //
 //                }
-//                is WebSocketResponse.Init -> {
-//
-//                }
-                is WebSocketResponse.ListeningStatus -> {
+                is WebSocketResponse.Init -> {
+                    if (parsed.data.name != _currentSong.value?.name) {
+                        viewModelScope.launch {
+                            getLastListened()
+                        }
+                    }
                     _currentSong.value = parsed.data
+                    _progress.longValue = parsed.data.progress
+                }
+                is WebSocketResponse.ListeningStatus -> {
+                    if (parsed.data.name != _currentSong.value?.name) {
+                        viewModelScope.launch {
+                            getLastListened()
+                        }
+                    }
+                    _currentSong.value = parsed.data
+                    _progress.longValue = parsed.data.progress
                 }
                 else -> {
                     // TODO: handle other types
@@ -121,6 +174,7 @@ class HomeViewModel (
         }
 
         webSocket = webSocketClient.newWebSocket(request, listener)
+        _isWebSocketConnected.value = true
     }
 
     // API
@@ -129,6 +183,8 @@ class HomeViewModel (
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 _currentSong.value = repository.getCurrentSong()
+
+                startProgressJob(_currentSong.value!!)
             } catch (e: IOException) {
                 println("Network error in 'getCurrentSong'. Please check your connection. Error: $e")
                 _currentSong.value = null
