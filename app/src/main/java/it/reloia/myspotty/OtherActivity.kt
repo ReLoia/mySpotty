@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import it.reloia.myspotty.settings.SettingsPage
+import it.reloia.myspotty.settings.SettingsAboutPage
 import it.reloia.myspotty.settings.SettingsTopBar
 import it.reloia.myspotty.ui.theme.MySpottyTheme
 
@@ -27,9 +27,6 @@ data class Page(
     val topBar: @Composable (() -> Unit)? = null
 )
 
-/**
- * TODO: handle more pages with a class for "pages" and create a list of pages to switch between using `currentPage` variable
- */
 class OtherActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +54,7 @@ class OtherActivity : ComponentActivity() {
             Page(
                 name = "Settings",
                 route = "settings",
-                content = { SettingsPage() },
+                content = { SettingsAboutPage() },
                 topBar = { SettingsTopBar() }
             ),
             Page(

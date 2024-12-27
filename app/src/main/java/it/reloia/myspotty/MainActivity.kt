@@ -119,7 +119,6 @@ class MainActivity : ComponentActivity() {
                                             contentDescription = "Settings",
                                             tint = Color.White
                                         )
-
                                     }
                                 },
                                 colors = topAppBarColors(
@@ -146,7 +145,7 @@ class MainActivity : ComponentActivity() {
                                     containerColor = DarkRed
                                 ) {
                                     val currentSOTD = homeViewModel.currentSelectedSOTD.value
-                                    Row (
+                                    Row(
                                         horizontalArrangement = Arrangement.End,
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -176,12 +175,18 @@ class MainActivity : ComponentActivity() {
 
                                         val shareIntent = Intent(Intent.ACTION_SEND)
                                         shareIntent.type = "text/plain"
-                                        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                                        shareIntent.putExtra(
+                                            Intent.EXTRA_TEXT,
                                             "${currentSOTD?.name} by ${currentSOTD?.author}: ${currentSOTD?.url}"
                                         )
                                         IconButton(
                                             onClick = {
-                                                context.startActivity(Intent.createChooser(shareIntent, "Share"))
+                                                context.startActivity(
+                                                    Intent.createChooser(
+                                                        shareIntent,
+                                                        "Share"
+                                                    )
+                                                )
                                             },
                                             modifier = Modifier
                                                 .padding(end = 10.dp)
@@ -236,20 +241,34 @@ class MainActivity : ComponentActivity() {
 
                                         Button(
                                             onClick = {
-                                                val password = context.getSharedPreferences("MySpotty", MODE_PRIVATE)
+                                                val password = context.getSharedPreferences(
+                                                    "MySpotty",
+                                                    MODE_PRIVATE
+                                                )
                                                     .getString("password", null)
 
                                                 if (currentSOTD == null) {
-                                                    Toast.makeText(context, "Cannot find the SOTD", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Cannot find the SOTD",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
                                                     return@Button
                                                 }
 
                                                 if (password == null) {
-                                                    Toast.makeText(context, "Please set the password in the settings", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Please set the password in the settings",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
                                                     return@Button
                                                 }
 
-                                                homeViewModel.removeFromSOTD(currentSOTD.date, password)
+                                                homeViewModel.removeFromSOTD(
+                                                    currentSOTD.date,
+                                                    password
+                                                )
                                                 homeViewModel.toggleSOTDSheet(null)
                                             },
                                             modifier = Modifier

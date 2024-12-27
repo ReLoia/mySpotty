@@ -43,7 +43,6 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
             .fillMaxWidth()
     ) {
         items(sotd.size) {
-            // TODO: make a bottom sheet with the song details and buttons to remove from SOTD
             Card(
                 modifier = Modifier
                     .padding(8.dp)
