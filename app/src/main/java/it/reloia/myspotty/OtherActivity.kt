@@ -7,28 +7,69 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import it.reloia.myspotty.settings.SettingsPage
+import it.reloia.myspotty.settings.SettingsTopBar
 import it.reloia.myspotty.ui.theme.MySpottyTheme
+
+data class Page(
+    val name: String,
+    val route: String,
+    val content: @Composable () -> Unit,
+    val topBar: @Composable (() -> Unit)? = null
+)
 
 /**
  * TODO: handle more pages with a class for "pages" and create a list of pages to switch between using `currentPage` variable
  */
 class OtherActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         var currentPage = "test"
 
+        val extraPage = intent?.getStringExtra("page")
+
         val sharedText = intent?.getStringExtra(Intent.EXTRA_TEXT)
         if (sharedText != null && sharedText.contains("open.spotify.com", ignoreCase = true)) {
             currentPage = "spotify"
+        } else if (extraPage != null) {
+            currentPage = extraPage
         }
 
-        println("OtherActivity: $currentPage ; $sharedText")
+        val pages = listOf(
+            Page(
+                name = "Spotify",
+                route = "spotify",
+                content = {
+                    Text("Hello, Spotify!")
+                }
+            ),
+            Page(
+                name = "Settings",
+                route = "settings",
+                content = { SettingsPage() },
+                topBar = { SettingsTopBar() }
+            ),
+            Page(
+                name = "test",
+                route = "test",
+                content = {
+                    Text("Hello, OtherActivity!")
+                }
+            )
+        )
+
+        val selectedPage = pages.first { it.route == currentPage }
 
         enableEdgeToEdge()
         setContent {
@@ -39,11 +80,25 @@ class OtherActivity : ComponentActivity() {
             )
 
             MySpottyTheme (dynamicColor = false, darkTheme = true) {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Text(
-                        text = "Hello, OtherActivity!",
-                        modifier = Modifier.padding(innerPadding),
-                    )
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        if (selectedPage.topBar != null) {
+                            selectedPage.topBar.invoke()
+                        } else {
+                            TopAppBar(
+                                title = {
+                                    Text(selectedPage.name)
+                                }
+                            )
+                        }
+                    }
+                ) { innerPadding ->
+                    Surface (
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        selectedPage.content()
+                    }
                 }
             }
         }

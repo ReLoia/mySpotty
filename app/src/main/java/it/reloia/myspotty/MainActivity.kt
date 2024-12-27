@@ -3,6 +3,7 @@ package it.reloia.myspotty
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -239,10 +240,12 @@ class MainActivity : ComponentActivity() {
                                                     .getString("password", null)
 
                                                 if (currentSOTD == null) {
+                                                    Toast.makeText(context, "Cannot find the SOTD", Toast.LENGTH_SHORT).show()
                                                     return@Button
                                                 }
 
                                                 if (password == null) {
+                                                    Toast.makeText(context, "Please set the password in the settings", Toast.LENGTH_SHORT).show()
                                                     return@Button
                                                 }
 
