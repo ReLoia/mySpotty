@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
         @Suppress("DEPRECATION")
         val prePreferences = getDefaultSharedPreferences(this)
         val baseURL = (prePreferences.getString("api_url", "") ?: "").let {
+            if (it.isEmpty()) return@let it
             if (!it.endsWith("/")) "$it/" else it
         }
 
