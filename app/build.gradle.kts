@@ -65,4 +65,7 @@ dependencies {
 
     // Koil Image Loading
     implementation(libs.coil.compose)
+
+    // ComposePreference
+    implementation (libs.compose.preferences)
 }

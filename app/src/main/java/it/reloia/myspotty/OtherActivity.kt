@@ -16,9 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import it.reloia.myspotty.settings.SettingsAboutPage
-import it.reloia.myspotty.settings.SettingsTopBar
+import it.reloia.myspotty.settings.ui.SettingsAboutPage
+import it.reloia.myspotty.settings.ui.SettingsTopBar
 import it.reloia.myspotty.ui.theme.MySpottyTheme
+import me.zhanghai.compose.preference.ProvidePreferenceFlow
 
 data class Page(
     val name: String,
@@ -70,31 +71,35 @@ class OtherActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val systemUiController = rememberSystemUiController()
+            ProvidePreferenceFlow {
 
-            systemUiController.setSystemBarsColor(
-                color = Color.Transparent
-            )
 
-            MySpottyTheme (dynamicColor = false, darkTheme = true) {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        if (selectedPage.topBar != null) {
-                            selectedPage.topBar.invoke()
-                        } else {
-                            TopAppBar(
-                                title = {
-                                    Text(selectedPage.name)
-                                }
-                            )
+                val systemUiController = rememberSystemUiController()
+
+                systemUiController.setSystemBarsColor(
+                    color = Color.Transparent
+                )
+
+                MySpottyTheme(dynamicColor = false, darkTheme = true) {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        topBar = {
+                            if (selectedPage.topBar != null) {
+                                selectedPage.topBar.invoke()
+                            } else {
+                                TopAppBar(
+                                    title = {
+                                        Text(selectedPage.name)
+                                    }
+                                )
+                            }
                         }
-                    }
-                ) { innerPadding ->
-                    Surface (
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        selectedPage.content()
+                    ) { innerPadding ->
+                        Surface(
+                            modifier = Modifier.padding(innerPadding)
+                        ) {
+                            selectedPage.content()
+                        }
                     }
                 }
             }

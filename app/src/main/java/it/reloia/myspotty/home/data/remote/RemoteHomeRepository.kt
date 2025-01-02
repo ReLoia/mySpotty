@@ -1,6 +1,5 @@
 package it.reloia.myspotty.home.data.remote
 
-import android.content.Context
 import it.reloia.myspotty.home.data.HomeRepository
 import it.reloia.myspotty.home.domain.model.CurrentSong
 import it.reloia.myspotty.home.domain.model.LastListened
@@ -8,7 +7,7 @@ import it.reloia.myspotty.home.domain.model.SOTD
 
 class RemoteHomeRepository (
     private val apiService: MySpottyApiService,
-    private val context: Context
+    override val baseURL: String,
 ) : HomeRepository {
     override suspend fun getCurrentSong(): CurrentSong? {
         return apiService.getCurrentSong()

@@ -5,6 +5,7 @@ import it.reloia.myspotty.home.domain.model.LastListened
 import it.reloia.myspotty.home.domain.model.SOTD
 
 interface HomeRepository {
+    val baseURL: String
     suspend fun getCurrentSong(): CurrentSong?
     suspend fun getSOTD(): List<SOTD>
     suspend fun getLastListened(): LastListened?

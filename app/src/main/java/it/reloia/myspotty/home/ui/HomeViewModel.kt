@@ -125,8 +125,15 @@ class HomeViewModel (
     }
 
     private fun connectToWebSocket() {
+        val baseURL = repository.baseURL.replace(regex = Regex("http(s)?://"), replacement = "wss://")
+
+        if (baseURL.isEmpty()) {
+            println("WebSocket: base URL is empty. Please set it in the settings.")
+            return
+        }
+
         val request = Request.Builder()
-            .url("wss://reloia.ddns.net/myspottyapi")
+            .url(baseURL)
             .build()
 
         val listener = MySpottyAPIWebSocket (
