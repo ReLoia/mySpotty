@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.sp
 import it.reloia.myspotty.ui.theme.DarkRed
 import me.zhanghai.compose.preference.LocalPreferenceFlow
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
-import me.zhanghai.compose.preference.switchPreference
 import me.zhanghai.compose.preference.textFieldPreference
 
 @Composable
@@ -48,13 +47,6 @@ fun SettingsAboutPage() {
                 defaultValue = "",
                 summary = { Text("The password used for some API calls") },
                 textToValue = { it }
-            )
-
-            switchPreference(
-                key = "show_api_name",
-                title = { Text("Show API name") },
-                defaultValue = false,
-                summary = { Text("In the main screen") },
             )
 
             item {

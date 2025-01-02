@@ -27,6 +27,9 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import it.reloia.myspotty.home.domain.model.SOTD
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Composable
 fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
@@ -65,6 +68,8 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
                             .clip(RoundedCornerShape(8.dp))
                     )
 
+                    val date = Instant.ofEpochMilli(sotd[it].date).atZone(ZoneId.systemDefault()).toLocalDate()
+
                     Text(
                         sotd[it].name,
                         modifier = Modifier
@@ -76,8 +81,10 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
                                 iterations = Int.MAX_VALUE
                             ),
                         style = TextStyle(
-                            color = Color.White,
-                            fontSize = 14.sp,
+                            color = if (date == LocalDate.now())
+                                Color(0xFFFFBF00)
+                            else Color.White,
+                                fontSize = 14.sp,
                             textAlign = TextAlign.Center
                         )
                     )

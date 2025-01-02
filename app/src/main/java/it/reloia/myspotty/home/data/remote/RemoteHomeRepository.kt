@@ -4,32 +4,53 @@ import it.reloia.myspotty.home.data.HomeRepository
 import it.reloia.myspotty.home.domain.model.CurrentSong
 import it.reloia.myspotty.home.domain.model.LastListened
 import it.reloia.myspotty.home.domain.model.SOTD
+import it.reloia.myspotty.home.domain.model.SOTDDateRequest
+import it.reloia.myspotty.home.domain.model.SOTDUrlRequest
 
 class RemoteHomeRepository (
     private val apiService: MySpottyApiService,
     override val baseURL: String,
 ) : HomeRepository {
     override suspend fun getCurrentSong(): CurrentSong? {
-        return apiService.getCurrentSong()
+        val response = apiService.getCurrentSong()
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
     }
 
     override suspend fun getSOTD(): List<SOTD> {
-        return apiService.getSOTD()
+        val response = apiService.getSOTD()
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     override suspend fun getLastListened(): LastListened? {
-        return apiService.getLastListened()
+        val response = apiService.getLastListened()
+        return if (response.isSuccessful) {
+            response.body()
+        } else {
+            null
+        }
     }
 
-    override suspend fun addSOTD(url: String, password: String) {
-        return apiService.addSOTD(password, url)
+    override suspend fun addSOTD(url: String, password: String): Boolean {
+        val response = apiService.addSOTD(password, SOTDUrlRequest(url))
+
+        return response.isSuccessful
     }
 
-    override suspend fun removeSOTD(url: String, password: String) {
-        return apiService.removeSOTD(password, url)
+    override suspend fun removeSOTD(url: String, password: String): Boolean {
+        val response = apiService.removeSOTD(password, SOTDUrlRequest(url))
+        return response.isSuccessful
     }
 
-    override suspend fun removeSOTD(date: Long, password: String) {
-        return apiService.removeSOTD(password, date)
+    override suspend fun removeSOTD(date: Long, password: String): Boolean {
+        val response = apiService.removeSOTD(password, SOTDDateRequest(date))
+        return response.isSuccessful
     }
 }

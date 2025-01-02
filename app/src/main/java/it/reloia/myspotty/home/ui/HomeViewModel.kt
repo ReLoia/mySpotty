@@ -25,7 +25,7 @@ import java.io.EOFException
 import java.io.IOException
 
 class HomeViewModel (
-    private val repository: HomeRepository
+    private val repository: HomeRepository? = null
 ) : ViewModel() {
     // LOCAL - Refresh
 
@@ -125,6 +125,11 @@ class HomeViewModel (
     }
 
     private fun connectToWebSocket() {
+        if (repository == null) {
+            println("WebSocket: base URL is empty. Please set it in the settings.")
+            return
+        }
+
         val baseURL = repository.baseURL.replace(regex = Regex("http(s)?://"), replacement = "wss://")
 
         if (baseURL.isEmpty()) {
@@ -150,9 +155,6 @@ class HomeViewModel (
         ) { message ->
             println("Received message: $message")
             when (val parsed: WebSocketResponse = parseWebSocketResponse(message)) {
-//                is WebSocketResponse.Chat -> {
-//
-//                }
                 is WebSocketResponse.Init -> {
                     if (parsed.data.name != _currentSong.value?.name) {
                         viewModelScope.launch {
@@ -171,10 +173,7 @@ class HomeViewModel (
                     _currentSong.value = parsed.data
                     _progress.longValue = parsed.data.progress
                 }
-                else -> {
-                    // TODO: handle other types
-                }
-//                is WebSocketResponse.PaintCanvas -> TODO()
+                else -> { }
             }
         }
 
@@ -185,6 +184,11 @@ class HomeViewModel (
     // API
 
     private fun getCurrentSong() {
+        if (repository == null) {
+            println("Repository is null. Please check your settings.")
+            return
+        }
+
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 _currentSong.value = repository.getCurrentSong()
@@ -198,6 +202,11 @@ class HomeViewModel (
     }
 
     private fun getSOTD() {
+        if (repository == null) {
+            println("Repository is null. Please check your settings.")
+            return
+        }
+
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 _sotd.value = repository.getSOTD()
@@ -208,6 +217,11 @@ class HomeViewModel (
     }
 
     private fun getLastListened() {
+        if (repository == null) {
+            println("Repository is null. Please check your settings.")
+            return
+        }
+
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 _lastListened.value = repository.getLastListened()
@@ -221,9 +235,16 @@ class HomeViewModel (
     }
 
     fun addToSOTD(url: String, password: String) {
+        if (repository == null) {
+            println("Repository is null. Please check your settings.")
+            return
+        }
+
         viewModelScope.launch (Dispatchers.IO) {
             try {
-                repository.addSOTD(url, password)
+                if (repository.addSOTD(url, password)) {
+                    getSOTD()
+                }
             } catch (e: IOException) {
                 println("Network error in 'addToSOTD'. Please check your connection. Error: $e")
             }
@@ -231,9 +252,16 @@ class HomeViewModel (
     }
 
     fun removeFromSOTD(url: String, password: String) {
+        if (repository == null) {
+            println("Repository is null. Please check your settings.")
+            return
+        }
+
         viewModelScope.launch (Dispatchers.IO) {
             try {
-                repository.removeSOTD(url, password)
+                if (repository.removeSOTD(url, password)) {
+                    getSOTD()
+                }
             } catch (e: IOException) {
                 println("Network error in 'removeFromSOTD'. Please check your connection. Error: $e")
             }
@@ -241,9 +269,16 @@ class HomeViewModel (
     }
 
     fun removeFromSOTD(date: Long, password: String) {
+        if (repository == null) {
+            println("Repository is null. Please check your settings.")
+            return
+        }
+
         viewModelScope.launch (Dispatchers.IO) {
             try {
-                repository.removeSOTD(date, password)
+                if (repository.removeSOTD(date, password)) {
+                    getSOTD()
+                }
             } catch (e: IOException) {
                 println("Network error in 'removeFromSOTD'. Please check your connection. Error: $e")
             }

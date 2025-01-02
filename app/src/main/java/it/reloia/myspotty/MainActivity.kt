@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager.getDefaultSharedPreferences
-import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -46,8 +45,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.util.LocalePreferences
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import it.reloia.myspotty.home.data.remote.MySpottyApiService
 import it.reloia.myspotty.home.data.remote.RemoteHomeRepository
@@ -57,9 +54,7 @@ import it.reloia.myspotty.model.getOrDefault
 import it.reloia.myspotty.ui.theme.DarkRed
 import it.reloia.myspotty.ui.theme.MySpottyTheme
 import me.zhanghai.compose.preference.LocalPreferenceFlow
-import me.zhanghai.compose.preference.Preferences
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
-import me.zhanghai.compose.preference.defaultPreferenceFlow
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
@@ -75,17 +70,19 @@ class MainActivity : ComponentActivity() {
         // preferences needed to start the home view model as soon as possible
         @Suppress("DEPRECATION")
         val prePreferences = getDefaultSharedPreferences(this)
-        val baseURL = prePreferences.getString("api_url", "") ?: ""
+        val baseURL = (prePreferences.getString("api_url", "") ?: "").let {
+            if (!it.endsWith("/")) "$it/" else it
+        }
 
         homeViewModel = HomeViewModel(
-            RemoteHomeRepository(
+            if (baseURL.isNotEmpty()) RemoteHomeRepository(
                 Retrofit.Builder()
                     .baseUrl(baseURL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                     .create(MySpottyApiService::class.java),
                 baseURL
-            )
+            ) else null
         )
 
 
@@ -111,10 +108,7 @@ class MainActivity : ComponentActivity() {
                             topBar = {
                                 TopAppBar(
                                     title = {
-                                        val isApiNameVisible =
-                                            preferences.getOrDefault("show_api_name", false)
-                                        if (isApiNameVisible) {
-                                            // TODO: make api name get loaded from the API
+                                        if (baseURL.isEmpty()) {
                                             Text("no api set")
                                         }
                                     },
@@ -135,6 +129,7 @@ class MainActivity : ComponentActivity() {
                                             val intent = Intent(context, OtherActivity::class.java)
                                             intent.putExtra("page", "settings")
                                             context.startActivity(intent)
+                                            finish()
                                         }) {
                                             Icon(
                                                 Icons.Default.Settings,
@@ -263,11 +258,7 @@ class MainActivity : ComponentActivity() {
 
                                             Button(
                                                 onClick = {
-                                                    val password = context.getSharedPreferences(
-                                                        "MySpotty",
-                                                        MODE_PRIVATE
-                                                    )
-                                                        .getString("password", null)
+                                                    val password = preferences.getOrDefault("api_password", "")
 
                                                     if (currentSOTD == null) {
                                                         Toast.makeText(
@@ -278,7 +269,7 @@ class MainActivity : ComponentActivity() {
                                                         return@Button
                                                     }
 
-                                                    if (password == null) {
+                                                    if (password.isEmpty()) {
                                                         Toast.makeText(
                                                             context,
                                                             "Please set the password in the settings",

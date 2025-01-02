@@ -1,6 +1,5 @@
 package it.reloia.myspotty.home.ui
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
@@ -21,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,9 +38,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import it.reloia.myspotty.home.domain.model.LastListened
+import it.reloia.myspotty.model.getOrDefault
+import me.zhanghai.compose.preference.LocalPreferenceFlow
 
 @Composable
 fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
+    val preferences by LocalPreferenceFlow.current.collectAsState()
+
     Text(
         "last listened song",
         fontSize = 18.sp,
@@ -86,7 +90,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
-    var liked by remember { mutableStateOf(false) }
+    var liked by remember(lastListened) { mutableStateOf(viewModel.sotd.value.any { it.url == lastListened?.song_link }) }
 
     Box(
         modifier = Modifier
@@ -113,20 +117,19 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
 
         IconButton(
             onClick = {
-                val password = context.getSharedPreferences("MySpotty", Context.MODE_PRIVATE)
-                    .getString("password", null)
+                val password = preferences.getOrDefault("api_password", "")
 
                 if (lastListened == null) {
                     Toast.makeText(context, "No song playing", Toast.LENGTH_SHORT).show()
                     return@IconButton
                 }
 
-                if (password == null) {
+                if (password.isEmpty()) {
                     Toast.makeText(context, "Please set the password in the settings", Toast.LENGTH_SHORT).show()
                     return@IconButton
                 }
 
-                if (liked)
+                if (!liked)
                     viewModel.addToSOTD(lastListened.song_link, password)
                 else
                     viewModel.removeFromSOTD(lastListened.song_link, password)

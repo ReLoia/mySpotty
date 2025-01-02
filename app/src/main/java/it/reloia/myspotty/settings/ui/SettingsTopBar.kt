@@ -1,5 +1,6 @@
 package it.reloia.myspotty.settings.ui
 
+import android.content.Intent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,6 +12,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import it.reloia.myspotty.MainActivity
 import it.reloia.myspotty.OtherActivity
 import it.reloia.myspotty.ui.theme.DarkRed
 
@@ -21,10 +23,11 @@ fun SettingsTopBar() {
     val context = LocalContext.current
 
     MediumTopAppBar(
-//        title = { Text("Settings and About") },
         title = { Text("mySpotty") },
         navigationIcon = {
             IconButton(onClick = {
+                val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
                 (context as OtherActivity).finish()
             }) {
                 Icon(

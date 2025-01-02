@@ -9,7 +9,7 @@ interface HomeRepository {
     suspend fun getCurrentSong(): CurrentSong?
     suspend fun getSOTD(): List<SOTD>
     suspend fun getLastListened(): LastListened?
-    suspend fun addSOTD(url: String, password: String)
-    suspend fun removeSOTD(date: Long, password: String)
-    suspend fun removeSOTD(url: String, password: String)
+    suspend fun addSOTD(url: String, password: String): Boolean
+    suspend fun removeSOTD(date: Long, password: String): Boolean
+    suspend fun removeSOTD(url: String, password: String): Boolean
 }
