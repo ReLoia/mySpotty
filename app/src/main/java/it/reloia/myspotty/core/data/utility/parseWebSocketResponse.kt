@@ -1,4 +1,4 @@
-package it.reloia.myspotty.core.utility
+package it.reloia.myspotty.core.data.utility
 
 import it.reloia.myspotty.core.domain.model.CurrentSong
 import it.reloia.myspotty.core.domain.model.WebSocketResponse

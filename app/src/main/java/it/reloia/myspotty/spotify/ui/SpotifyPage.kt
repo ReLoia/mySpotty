@@ -164,7 +164,7 @@ fun SpotifyPage(songId: String, spotifyViewModel: SpotifyViewModel) {
 
         Spacer(
             modifier = Modifier
-                .height(33.dp)
+                .height(66.dp)
         )
     }
 }

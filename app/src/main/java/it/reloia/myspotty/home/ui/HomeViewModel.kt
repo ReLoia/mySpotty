@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.reloia.myspotty.home.data.HomeRepository
 import it.reloia.myspotty.core.data.api.MySpottyAPIWebSocket
-import it.reloia.myspotty.core.utility.parseWebSocketResponse
+import it.reloia.myspotty.core.data.utility.parseWebSocketResponse
 import it.reloia.myspotty.core.domain.model.CurrentSong
 import it.reloia.myspotty.core.domain.model.LastListened
 import it.reloia.myspotty.core.domain.model.SOTD
