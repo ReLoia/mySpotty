@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import it.reloia.myspotty.home.domain.model.LastListened
+import it.reloia.myspotty.core.domain.model.LastListened
 import it.reloia.myspotty.model.getOrDefault
 import me.zhanghai.compose.preference.LocalPreferenceFlow
 

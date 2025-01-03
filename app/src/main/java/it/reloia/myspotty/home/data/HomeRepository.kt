@@ -1,8 +1,8 @@
 package it.reloia.myspotty.home.data
 
-import it.reloia.myspotty.home.domain.model.CurrentSong
-import it.reloia.myspotty.home.domain.model.LastListened
-import it.reloia.myspotty.home.domain.model.SOTD
+import it.reloia.myspotty.core.domain.model.CurrentSong
+import it.reloia.myspotty.core.domain.model.LastListened
+import it.reloia.myspotty.core.domain.model.SOTD
 
 interface HomeRepository {
     val baseURL: String

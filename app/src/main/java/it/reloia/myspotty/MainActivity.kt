@@ -46,7 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import it.reloia.myspotty.home.data.remote.MySpottyApiService
+import it.reloia.myspotty.core.data.api.MySpottyApiService
 import it.reloia.myspotty.home.data.remote.RemoteHomeRepository
 import it.reloia.myspotty.home.ui.HomeScreen
 import it.reloia.myspotty.home.ui.HomeViewModel
@@ -86,6 +86,11 @@ class MainActivity : ComponentActivity() {
             ) else null
         )
 
+        val error = intent.getStringExtra("error") ?: ""
+
+        if (error.isNotEmpty()) {
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+        }
 
         setContent {
             ProvidePreferenceLocals {

@@ -1,13 +1,10 @@
-package it.reloia.myspotty.home.domain.model
+package it.reloia.myspotty.core.domain.model
 
-data class CurrentSong(
+data class LastListened(
     val author: String,
     val name: String,
     val song_link: String,
-    val duration: Long,
-    val progress: Long,
     val explicit: Boolean,
-    val playing: Boolean,
     val album_name: String,
     val album_image: String
 )

@@ -1,4 +1,4 @@
-package it.reloia.myspotty.home.domain.model
+package it.reloia.myspotty.core.domain.model
 
 data class SOTD(
     val name: String,

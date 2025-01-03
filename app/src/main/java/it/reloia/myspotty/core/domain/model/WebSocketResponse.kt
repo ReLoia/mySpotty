@@ -1,4 +1,4 @@
-package it.reloia.myspotty.home.domain.model
+package it.reloia.myspotty.core.domain.model
 
 sealed class WebSocketResponse {
     data class Init(

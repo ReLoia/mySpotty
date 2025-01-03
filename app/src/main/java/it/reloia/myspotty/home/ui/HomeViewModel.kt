@@ -6,12 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.reloia.myspotty.home.data.HomeRepository
-import it.reloia.myspotty.home.data.remote.MySpottyAPIWebSocket
-import it.reloia.myspotty.home.data.remote.parseWebSocketResponse
-import it.reloia.myspotty.home.domain.model.CurrentSong
-import it.reloia.myspotty.home.domain.model.LastListened
-import it.reloia.myspotty.home.domain.model.SOTD
-import it.reloia.myspotty.home.domain.model.WebSocketResponse
+import it.reloia.myspotty.core.data.api.MySpottyAPIWebSocket
+import it.reloia.myspotty.core.utility.parseWebSocketResponse
+import it.reloia.myspotty.core.domain.model.CurrentSong
+import it.reloia.myspotty.core.domain.model.LastListened
+import it.reloia.myspotty.core.domain.model.SOTD
+import it.reloia.myspotty.core.domain.model.WebSocketResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -153,7 +153,6 @@ class HomeViewModel (
                 webSocket = null
             },
         ) { message ->
-            println("Received message: $message")
             when (val parsed: WebSocketResponse = parseWebSocketResponse(message)) {
                 is WebSocketResponse.Init -> {
                     if (parsed.data.name != _currentSong.value?.name) {

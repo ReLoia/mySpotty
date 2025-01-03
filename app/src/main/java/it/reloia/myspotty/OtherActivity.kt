@@ -1,8 +1,12 @@
 package it.reloia.myspotty
 
+import android.app.ActivityManager
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager.getDefaultSharedPreferences
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,14 +16,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import it.reloia.myspotty.core.data.api.MySpottyApiService
 import it.reloia.myspotty.settings.ui.SettingsAboutPage
 import it.reloia.myspotty.settings.ui.SettingsTopBar
+import it.reloia.myspotty.spotify.data.remote.RemoteSpotifyRepository
+import it.reloia.myspotty.spotify.ui.SpotifyPage
+import it.reloia.myspotty.spotify.ui.SpotifyViewModel
+import it.reloia.myspotty.ui.theme.DarkRed
 import it.reloia.myspotty.ui.theme.MySpottyTheme
 import me.zhanghai.compose.preference.ProvidePreferenceFlow
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 data class Page(
     val name: String,
@@ -33,24 +46,46 @@ class OtherActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var currentPage = "test"
-
-        val extraPage = intent?.getStringExtra("page")
-
         val sharedText = intent?.getStringExtra(Intent.EXTRA_TEXT)
-        if (sharedText != null && sharedText.contains("open.spotify.com", ignoreCase = true)) {
-            currentPage = "spotify"
-        } else if (extraPage != null) {
-            currentPage = extraPage
-        }
+
+        val currentPage =
+            if (sharedText != null && sharedText.contains("open.spotify.com", ignoreCase = true)) {
+                "spotify"
+            } else intent?.getStringExtra("page")
+                ?: return returnToMainWithMessage("Not a Spotify URL")
+
+        @Suppress("DEPRECATION")
+        val prePreferences = getDefaultSharedPreferences(this)
 
         val pages = listOf(
             Page(
                 name = "Spotify",
                 route = "spotify",
                 content = {
-                    Text("Hello, Spotify!")
-                }
+                    val url = sharedText!!.split(" ").firstOrNull { it.contains("open.spotify.com") }
+                        ?: return@Page returnToMainWithMessage("Not a Spotify URL")
+
+                    val songId = Uri.parse(url).pathSegments.lastOrNull()
+                        ?: return@Page returnToMainWithMessage("No song ID found")
+
+                    val baseUrl = (prePreferences.getString("api_url", "") ?: "").let {
+                        if (it.isEmpty()) return@let it
+                        if (!it.endsWith("/")) "$it/" else it
+                    }
+
+                    val spotifyViewModel = SpotifyViewModel(
+                        if (baseUrl.isNotEmpty()) RemoteSpotifyRepository(
+                            Retrofit.Builder()
+                                .baseUrl(baseUrl)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build()
+                                .create(MySpottyApiService::class.java),
+                        ) else null
+                    )
+
+                    SpotifyPage(songId, spotifyViewModel)
+                },
+                topBar = {}
             ),
             Page(
                 name = "Settings",
@@ -72,6 +107,19 @@ class OtherActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ProvidePreferenceFlow {
+                val content = LocalContext.current
+
+                BackHandler {
+                    val activityManager = content.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+                    val tasks = activityManager.appTasks.firstOrNull()?.taskInfo
+
+                    if (selectedPage.route == "settings" && tasks?.numActivities == 1) {
+                        val intent = Intent(content, MainActivity::class.java)
+                        startActivity(intent)
+                    }
+
+                    finish()
+                }
 
 
                 val systemUiController = rememberSystemUiController()
@@ -90,7 +138,8 @@ class OtherActivity : ComponentActivity() {
                                 TopAppBar(
                                     title = {
                                         Text(selectedPage.name)
-                                    }
+                                    },
+                                    colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = DarkRed, scrolledContainerColor = DarkRed)
                                 )
                             }
                         }
@@ -105,4 +154,12 @@ class OtherActivity : ComponentActivity() {
             }
         }
     }
+
+    fun returnToMainWithMessage(message: String) {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("error", message)
+        startActivity(intent)
+        finish()
+    }
+
 }

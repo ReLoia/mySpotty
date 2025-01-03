@@ -1,7 +1,7 @@
-package it.reloia.myspotty.home.data.remote
+package it.reloia.myspotty.core.utility
 
-import it.reloia.myspotty.home.domain.model.CurrentSong
-import it.reloia.myspotty.home.domain.model.WebSocketResponse
+import it.reloia.myspotty.core.domain.model.CurrentSong
+import it.reloia.myspotty.core.domain.model.WebSocketResponse
 import org.json.JSONArray
 import org.json.JSONObject
 

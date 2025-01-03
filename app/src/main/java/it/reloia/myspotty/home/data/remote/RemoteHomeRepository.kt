@@ -1,11 +1,12 @@
 package it.reloia.myspotty.home.data.remote
 
+import it.reloia.myspotty.core.data.api.MySpottyApiService
 import it.reloia.myspotty.home.data.HomeRepository
-import it.reloia.myspotty.home.domain.model.CurrentSong
-import it.reloia.myspotty.home.domain.model.LastListened
-import it.reloia.myspotty.home.domain.model.SOTD
-import it.reloia.myspotty.home.domain.model.SOTDDateRequest
-import it.reloia.myspotty.home.domain.model.SOTDUrlRequest
+import it.reloia.myspotty.core.domain.model.CurrentSong
+import it.reloia.myspotty.core.domain.model.LastListened
+import it.reloia.myspotty.core.domain.model.SOTD
+import it.reloia.myspotty.core.domain.model.request.SOTDDateRequest
+import it.reloia.myspotty.core.domain.model.request.SOTDUrlRequest
 
 class RemoteHomeRepository (
     private val apiService: MySpottyApiService,

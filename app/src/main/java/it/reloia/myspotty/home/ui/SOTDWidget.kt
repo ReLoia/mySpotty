@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import it.reloia.myspotty.home.domain.model.SOTD
+import it.reloia.myspotty.core.domain.model.SOTD
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId

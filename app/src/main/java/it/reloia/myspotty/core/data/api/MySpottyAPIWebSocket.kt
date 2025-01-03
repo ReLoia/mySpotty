@@ -1,4 +1,4 @@
-package it.reloia.myspotty.home.data.remote
+package it.reloia.myspotty.core.data.api
 
 import okhttp3.Response
 import okhttp3.WebSocket
