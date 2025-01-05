@@ -94,8 +94,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ProvidePreferenceLocals {
-                val systemUiController = rememberSystemUiController()
                 val preferences by LocalPreferenceFlow.current.collectAsState()
+                val systemUiController = rememberSystemUiController()
 
                 systemUiController.setSystemBarsColor(
                     color = Color.Transparent
