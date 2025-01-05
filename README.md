@@ -12,6 +12,11 @@ Follow the guide on [mySpottyAPI](https://github.com/reloia/mySpottyAPI) to clon
 
 ### enjoy
 
+### Wanna try it without starting your own API?
+- Download the app from https://github.com/ReLoia/mySpotty/releases/latest
+- Go to the settings and set the API url to https://reloia.ddns.net/myspottyapi/
+
+
 ## Features
 
 - Home page with **Currently listening** and **Last Listened** song
