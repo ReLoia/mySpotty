@@ -31,11 +31,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import it.reloia.myspotty.R
 import it.reloia.myspotty.core.domain.model.CurrentSong
-import it.reloia.myspotty.model.getOrDefault
+import it.reloia.myspotty.core.preferences.getOrDefault
 import me.zhanghai.compose.preference.LocalPreferenceFlow
 
 @Composable
@@ -70,7 +72,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                         .data(currentSong.album_image)
                         .crossfade(true)
                         .build(),
-                    contentDescription = "Album image",
+                    contentDescription = stringResource(R.string.song_album_image),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -85,12 +87,13 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
                     val password = preferences.getOrDefault("api_password", "")
 
                     if (currentSong == null) {
-                        Toast.makeText(context, "No song playing", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context,
+                            context.getString(R.string.song_not_playing), Toast.LENGTH_SHORT).show()
                         return@IconButton
                     }
 
                     if (password.isEmpty()) {
-                        Toast.makeText(context, "Please set the password in the settings", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.no_password_set), Toast.LENGTH_SHORT).show()
                         return@IconButton
                     }
 
@@ -110,7 +113,7 @@ fun ListeningWidget(currentSong: CurrentSong?, viewModel: HomeViewModel) {
             ) {
                 Icon(
                     Icons.Default.Favorite,
-                    contentDescription = "Favorite",
+                    contentDescription = stringResource(R.string.favorite),
                     tint = if (liked) Color.Red else Color.White,
                     modifier = Modifier.size(18.dp)
                 )

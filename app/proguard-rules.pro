@@ -19,3 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep the model data classes used by Retrofit
+-keep class it.reloia.myspotty.core.domain.model.** { *; }
+
+# Keep Gson annotations intact if using Gson
+-keepattributes Annotation
+
+# Keep Retrofit API interfaces
+-keep class it.reloia.myspotty.core.data.api.** { *; }
+
+# Keep any other Retrofit-related classes
+-keep class retrofit2.** { *; }
+-keep interface retrofit2.** { *; }

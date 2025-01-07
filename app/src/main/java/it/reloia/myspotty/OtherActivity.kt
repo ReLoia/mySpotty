@@ -21,8 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import it.reloia.myspotty.core.data.api.MySpottyApiService
+import it.reloia.myspotty.core.preferences.getApiURL
 import it.reloia.myspotty.settings.ui.SettingsAboutPage
 import it.reloia.myspotty.settings.ui.SettingsTopBar
 import it.reloia.myspotty.spotify.data.remote.RemoteSpotifyRepository
@@ -52,7 +54,7 @@ class OtherActivity : ComponentActivity() {
             if (sharedText != null && sharedText.contains("open.spotify.com", ignoreCase = true)) {
                 "spotify"
             } else intent?.getStringExtra("page")
-                ?: return returnToMainWithMessage("Not a Spotify URL")
+                ?: return returnToMainWithMessage(getString(R.string.no_spotify_url))
 
         @Suppress("DEPRECATION")
         val prePreferences = getDefaultSharedPreferences(this)
@@ -63,15 +65,12 @@ class OtherActivity : ComponentActivity() {
                 route = "spotify",
                 content = {
                     val url = sharedText!!.split(" ").firstOrNull { it.contains("open.spotify.com") }
-                        ?: return@Page returnToMainWithMessage("Not a Spotify URL")
+                        ?: return@Page returnToMainWithMessage(stringResource(R.string.no_spotify_url))
 
                     val songId = Uri.parse(url).pathSegments.lastOrNull()
-                        ?: return@Page returnToMainWithMessage("No song ID found")
+                        ?: return@Page returnToMainWithMessage(stringResource(R.string.no_song_id))
 
-                    val baseUrl = (prePreferences.getString("api_url", "") ?: "").let {
-                        if (it.isEmpty()) return@let it
-                        if (!it.endsWith("/")) "$it/" else it
-                    }
+                    val baseUrl = prePreferences.getApiURL()
 
                     val spotifyViewModel = SpotifyViewModel(
                         if (baseUrl.isNotEmpty()) RemoteSpotifyRepository(
@@ -88,7 +87,7 @@ class OtherActivity : ComponentActivity() {
                 topBar = {}
             ),
             Page(
-                name = "Settings",
+                name = getString(R.string.settings),
                 route = "settings",
                 content = { SettingsAboutPage() },
                 topBar = { SettingsTopBar() }

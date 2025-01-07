@@ -35,12 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import it.reloia.myspotty.OtherActivity
+import it.reloia.myspotty.R
 import it.reloia.myspotty.ui.theme.DarkRed
 import me.zhanghai.compose.preference.LocalPreferenceFlow
 
@@ -72,7 +74,7 @@ fun SpotifyPage(songId: String, spotifyViewModel: SpotifyViewModel) {
         var liked by remember(songInfo) { mutableStateOf(spotifyViewModel.sotd.value.any { it.url.startsWith(url) }) }
 
         Text(
-            (songInfo?.author ?: "No author"),
+            (songInfo?.author ?: stringResource(R.string.song_no_author)),
             fontSize = 18.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -83,7 +85,7 @@ fun SpotifyPage(songId: String, spotifyViewModel: SpotifyViewModel) {
             textAlign = TextAlign.Center
         )
         Text(
-            (songInfo?.name ?: "No song playing"),
+            (songInfo?.name ?: stringResource(R.string.song_not_playing)),
             fontSize = 28.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,7 +96,7 @@ fun SpotifyPage(songId: String, spotifyViewModel: SpotifyViewModel) {
             textAlign = TextAlign.Center
         )
         Text(
-            (songInfo?.album_name ?: "No album"),
+            (songInfo?.album_name ?: stringResource(R.string.song_no_album)),
             fontSize = 15.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -124,7 +126,7 @@ fun SpotifyPage(songId: String, spotifyViewModel: SpotifyViewModel) {
                         .data(songInfo!!.album_image)
                         .crossfade(true)
                         .build(),
-                    contentDescription = "Album image",
+                    contentDescription = stringResource(R.string.song_album_image),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -135,7 +137,7 @@ fun SpotifyPage(songId: String, spotifyViewModel: SpotifyViewModel) {
             IconButton(
                 onClick = {
                     if (password.isEmpty()) {
-                        Toast.makeText(context, "Please set the password in the settings", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.no_password_set), Toast.LENGTH_SHORT).show()
                         return@IconButton
                     }
 
@@ -155,7 +157,7 @@ fun SpotifyPage(songId: String, spotifyViewModel: SpotifyViewModel) {
             ) {
                 Icon(
                     Icons.Default.Favorite,
-                    contentDescription = "Favorite",
+                    contentDescription = stringResource(R.string.favorite),
                     tint = if (liked) Color.Red else Color.White,
                     modifier = Modifier.size(20.dp)
                 )

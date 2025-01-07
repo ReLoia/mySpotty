@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import it.reloia.myspotty.R
 import it.reloia.myspotty.core.domain.model.SOTD
 import java.time.Instant
 import java.time.LocalDate
@@ -34,7 +36,7 @@ import java.time.ZoneId
 @Composable
 fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
     Text(
-        "songs of the day",
+        stringResource(R.string.songs_of_the_day),
         fontSize = 18.sp,
         modifier = Modifier
             .padding(bottom = 6.dp)
@@ -62,7 +64,10 @@ fun SOTDWidget(sotd: List<SOTD>, viewModel: HomeViewModel) {
                             .diskCachePolicy(CachePolicy.ENABLED)
                             .networkCachePolicy(CachePolicy.READ_ONLY)
                             .build(),
-                        contentDescription = sotd[it].name + " album cover",
+                        contentDescription = stringResource(
+                            R.string.song_album_cover,
+                            sotd[it].name
+                        ),
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(8.dp))

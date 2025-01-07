@@ -43,14 +43,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import it.reloia.myspotty.core.data.api.MySpottyApiService
+import it.reloia.myspotty.core.preferences.getApiURL
+import it.reloia.myspotty.core.preferences.getOrDefault
 import it.reloia.myspotty.home.data.remote.RemoteHomeRepository
 import it.reloia.myspotty.home.ui.HomeScreen
 import it.reloia.myspotty.home.ui.HomeViewModel
-import it.reloia.myspotty.model.getOrDefault
 import it.reloia.myspotty.ui.theme.DarkRed
 import it.reloia.myspotty.ui.theme.MySpottyTheme
 import me.zhanghai.compose.preference.LocalPreferenceFlow
@@ -70,10 +72,7 @@ class MainActivity : ComponentActivity() {
         // preferences needed to start the home view model as soon as possible
         @Suppress("DEPRECATION")
         val prePreferences = getDefaultSharedPreferences(this)
-        val baseURL = (prePreferences.getString("api_url", "") ?: "").let {
-            if (it.isEmpty()) return@let it
-            if (!it.endsWith("/")) "$it/" else it
-        }
+        val baseURL = prePreferences.getApiURL()
 
         homeViewModel = HomeViewModel(
             if (baseURL.isNotEmpty()) RemoteHomeRepository(
@@ -115,7 +114,7 @@ class MainActivity : ComponentActivity() {
                                 TopAppBar(
                                     title = {
                                         if (baseURL.isEmpty()) {
-                                            Text("no api set")
+                                            Text(stringResource(R.string.api_not_set))
                                         }
                                     },
                                     actions = {
@@ -139,7 +138,7 @@ class MainActivity : ComponentActivity() {
                                         }) {
                                             Icon(
                                                 Icons.Default.Settings,
-                                                contentDescription = "Settings",
+                                                contentDescription = getString(R.string.settings),
                                                 tint = Color.White
                                             )
                                         }
@@ -188,7 +187,7 @@ class MainActivity : ComponentActivity() {
                                                 ) {
                                                     Icon(
                                                         painter = painterResource(id = R.drawable.outline_globe_24),
-                                                        contentDescription = "Open in Browser",
+                                                        contentDescription = stringResource(R.string.open_in_browser),
                                                         tint = Color.White,
                                                         modifier = Modifier
                                                             .size(19.dp)
@@ -200,14 +199,19 @@ class MainActivity : ComponentActivity() {
                                             shareIntent.type = "text/plain"
                                             shareIntent.putExtra(
                                                 Intent.EXTRA_TEXT,
-                                                "${currentSOTD?.name} by ${currentSOTD?.author}: ${currentSOTD?.url}"
+                                                stringResource(
+                                                    R.string.sotd_infos,
+                                                    currentSOTD?.name ?: "",
+                                                    currentSOTD?.author ?: "",
+                                                    currentSOTD?.url ?: ""
+                                                )
                                             )
                                             IconButton(
                                                 onClick = {
                                                     context.startActivity(
                                                         Intent.createChooser(
                                                             shareIntent,
-                                                            "Share"
+                                                            getString(R.string.share)
                                                         )
                                                     )
                                                 },
@@ -220,7 +224,7 @@ class MainActivity : ComponentActivity() {
                                             ) {
                                                 Icon(
                                                     Icons.Default.Share,
-                                                    contentDescription = "Share",
+                                                    contentDescription = getString(R.string.share),
                                                     tint = Color.White,
                                                     modifier = Modifier
                                                         .size(19.dp)
@@ -233,7 +237,7 @@ class MainActivity : ComponentActivity() {
                                                 .padding(bottom = 32.dp)
                                         ) {
                                             Text(
-                                                "  " + (currentSOTD?.name ?: "No song selected"),
+                                                "  " + (currentSOTD?.name ?: stringResource(R.string.song_not_selected)),
                                                 modifier = Modifier
                                                     .basicMarquee(
                                                         iterations = Int.MAX_VALUE,
@@ -241,7 +245,7 @@ class MainActivity : ComponentActivity() {
                                                 fontSize = 22.sp,
                                             )
                                             Text(
-                                                "   " + (currentSOTD?.author ?: "No author"),
+                                                "   " + (currentSOTD?.author ?: stringResource(R.string.song_no_author)),
                                                 modifier = Modifier
                                                     .basicMarquee(
                                                         iterations = Int.MAX_VALUE
@@ -269,7 +273,7 @@ class MainActivity : ComponentActivity() {
                                                     if (currentSOTD == null) {
                                                         Toast.makeText(
                                                             context,
-                                                            "Cannot find the SOTD",
+                                                            getString(R.string.sotd_not_found),
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                         return@Button
@@ -278,7 +282,7 @@ class MainActivity : ComponentActivity() {
                                                     if (password.isEmpty()) {
                                                         Toast.makeText(
                                                             context,
-                                                            "Please set the password in the settings",
+                                                            getString(R.string.no_password_set),
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                         return@Button
@@ -297,7 +301,7 @@ class MainActivity : ComponentActivity() {
                                                     containerColor = Color(0xDE9F1414)
                                                 )
                                             ) {
-                                                Text("Remove from SOTD")
+                                                Text(stringResource(R.string.sotd_remove))
                                             }
                                         }
                                     }

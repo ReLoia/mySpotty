@@ -32,13 +32,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import it.reloia.myspotty.R
 import it.reloia.myspotty.core.domain.model.LastListened
-import it.reloia.myspotty.model.getOrDefault
+import it.reloia.myspotty.core.preferences.getOrDefault
 import me.zhanghai.compose.preference.LocalPreferenceFlow
 
 @Composable
@@ -46,14 +48,14 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
     val preferences by LocalPreferenceFlow.current.collectAsState()
 
     Text(
-        "last listened song",
+        stringResource(R.string.last_listened_song),
         fontSize = 18.sp,
         modifier = Modifier
             .padding(bottom = 6.dp)
     )
 
     Text(
-        (lastListened?.author ?: "No author"),
+        (lastListened?.author ?: stringResource(R.string.song_no_album)),
         fontSize = 13.sp,
         modifier = Modifier
             .fillMaxWidth()
@@ -64,7 +66,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
         textAlign = TextAlign.Center
     )
     Text(
-        (lastListened?.name ?: "No song playing"),
+        (lastListened?.name ?: stringResource(R.string.song_not_playing)),
         fontSize = 19.sp,
         modifier = Modifier
             .fillMaxWidth()
@@ -75,7 +77,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
         textAlign = TextAlign.Center
     )
     Text(
-        (lastListened?.album_name ?: "No album"),
+        (lastListened?.album_name ?: stringResource(R.string.song_no_album)),
         fontSize = 13.sp,
         modifier = Modifier
             .fillMaxWidth()
@@ -105,7 +107,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
                     .data(lastListened.album_image)
                     .crossfade(true)
                     .build(),
-                contentDescription = "Album image",
+                contentDescription = stringResource(R.string.song_no_album_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
@@ -120,12 +122,12 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
                 val password = preferences.getOrDefault("api_password", "")
 
                 if (lastListened == null) {
-                    Toast.makeText(context, "No song playing", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.song_not_playing), Toast.LENGTH_SHORT).show()
                     return@IconButton
                 }
 
                 if (password.isEmpty()) {
-                    Toast.makeText(context, "Please set the password in the settings", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.no_password_set), Toast.LENGTH_SHORT).show()
                     return@IconButton
                 }
 
@@ -145,7 +147,7 @@ fun LastListenedWidget(lastListened: LastListened?, viewModel: HomeViewModel) {
         ) {
             Icon(
                 Icons.Default.Favorite,
-                contentDescription = "Favorite",
+                contentDescription = stringResource(R.string.favorite),
                 tint = if (liked) Color.Red else Color.White,
                 modifier = Modifier.size(16.dp)
             )

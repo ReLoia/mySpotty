@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.reloia.myspotty.OtherActivity
+import it.reloia.myspotty.R
 import it.reloia.myspotty.ui.theme.DarkRed
 import me.zhanghai.compose.preference.LocalPreferenceFlow
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
@@ -35,31 +37,32 @@ fun SettingsAboutPage() {
 
     ProvidePreferenceLocals (flow = LocalPreferenceFlow.current) {
         LazyColumn (
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(
                     color = DarkRed
                 ),
         ) {
             item {
                 Text(
-                    text = "Settings",
+                    text = stringResource(R.string.settings),
                     modifier = Modifier.padding(start = 16.dp),
                 )
             }
 
             textFieldPreference(
                 key = "api_url",
-                title = { Text("API Url") },
+                title = { Text(stringResource(R.string.api_url)) },
                 defaultValue = "",
-                summary = { Text("The URL of the API server") },
+                summary = { Text(stringResource(R.string.api_url_summary)) },
                 textToValue = { it }
             )
 
             textFieldPreference(
                 key = "api_password",
-                title = { Text("API Password") },
+                title = { Text(stringResource(R.string.api_password)) },
                 defaultValue = "",
-                summary = { Text("The password used for some API calls") },
+                summary = { Text(stringResource(R.string.api_password_summary)) },
                 textToValue = { it }
             )
 
@@ -69,12 +72,12 @@ fun SettingsAboutPage() {
                 )
 
                 Text(
-                    text = "About",
+                    text = stringResource(R.string.about),
                     modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
                 )
 
                 Text(
-                    text = "how does it work?",
+                    text = stringResource(R.string.about_title),
                     fontSize = 18.sp,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -83,12 +86,13 @@ fun SettingsAboutPage() {
                 )
 
                 Column(
-                    Modifier.fillMaxWidth()
+                    Modifier
+                        .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp)
                 ) {
                     Text(
                         buildAnnotatedString {
-                            append("Create your personal mySpottyAPI instance by following the instructions at ")
+                            append(stringResource(R.string.about_one))
                             withLink(
                                 LinkAnnotation.Url(url = "https://github.com/ReLoia/mySpottyAPI")
                             ) {
@@ -97,10 +101,10 @@ fun SettingsAboutPage() {
                                         color = Color.Red
                                     )
                                 ) {
-                                    append("this repository")
+                                    append(stringResource(R.string.about_repo))
                                 }
                             }
-                            append(" then simply host it on your server and set the API URL and password in the settings.")
+                            append(stringResource(R.string.about_two))
                         }
                     )
 
@@ -109,8 +113,8 @@ fun SettingsAboutPage() {
 
             preference(
                 key = "about",
-                title = { Text("Github Repo") },
-                summary = { Text("Click here to open the Repo of this app's source code") },
+                title = { Text(stringResource(R.string.about_gh)) },
+                summary = { Text(stringResource(R.string.about_gh_summary)) },
                 onClick = {
                     val browserIntent = Intent(Intent.ACTION_VIEW)
                     browserIntent.data = Uri.parse("https://github.com/ReLoia/mySpotty")
