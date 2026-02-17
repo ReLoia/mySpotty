@@ -142,7 +142,7 @@ class OtherActivity : ComponentActivity() {
                                     title = {
                                         Text(selectedPage.name)
                                     },
-                                    colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = DarkRed, scrolledContainerColor = DarkRed)
+                                    colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkRed, scrolledContainerColor = DarkRed)
                                 )
                             }
                         }
