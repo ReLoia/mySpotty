@@ -4,8 +4,9 @@ import android.app.ActivityManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager.getDefaultSharedPreferences
+import androidx.preference.PreferenceManager
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +21,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -56,8 +58,7 @@ class OtherActivity : ComponentActivity() {
             } else intent?.getStringExtra("page")
                 ?: return returnToMainWithMessage(getString(R.string.no_spotify_url))
 
-        @Suppress("DEPRECATION")
-        val prePreferences = getDefaultSharedPreferences(this)
+        val prePreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         val pages = listOf(
             Page(
@@ -103,7 +104,17 @@ class OtherActivity : ComponentActivity() {
 
         val selectedPage = pages.first { it.route == currentPage }
 
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                lightScrim = Color.Transparent.toArgb(),
+                darkScrim = Color.Transparent.toArgb()
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                lightScrim = Color.Transparent.toArgb(),
+                darkScrim = Color.Transparent.toArgb()
+            )
+        )
+
         setContent {
             ProvidePreferenceFlow {
                 val content = LocalContext.current
@@ -119,13 +130,6 @@ class OtherActivity : ComponentActivity() {
 
                     finish()
                 }
-
-
-                val systemUiController = rememberSystemUiController()
-
-                systemUiController.setSystemBarsColor(
-                    color = Color.Transparent
-                )
 
                 MySpottyTheme(dynamicColor = false, darkTheme = true) {
                     Scaffold(

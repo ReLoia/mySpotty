@@ -3,9 +3,9 @@ package it.reloia.myspotty
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager.getDefaultSharedPreferences
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -41,11 +42,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.preference.PreferenceManager
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import it.reloia.myspotty.core.data.api.MySpottyApiService
 import it.reloia.myspotty.core.preferences.getApiURL
@@ -67,12 +71,21 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                lightScrim = Color.Transparent.toArgb(),
+                darkScrim = Color.Transparent.toArgb()
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                lightScrim = Color.Transparent.toArgb(),
+                darkScrim = Color.Transparent.toArgb()
+            )
+        )
 
         // preferences needed to start the home view model as soon as possible
-        @Suppress("DEPRECATION")
-        val prePreferences = getDefaultSharedPreferences(this)
+        val prePreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val baseURL = prePreferences.getApiURL()
+
 
         homeViewModel = HomeViewModel(
             if (baseURL.isNotEmpty()) RemoteHomeRepository(
@@ -94,14 +107,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProvidePreferenceLocals {
                 val preferences by LocalPreferenceFlow.current.collectAsState()
-                val systemUiController = rememberSystemUiController()
-
-                systemUiController.setSystemBarsColor(
-                    color = Color.Transparent
-                )
 
                 MySpottyTheme(dynamicColor = false, darkTheme = true) {
                     val context = LocalContext.current
+                    val configuration = LocalConfiguration.current
 
                     Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -109,7 +118,7 @@ class MainActivity : ComponentActivity() {
                         contentColor = Color.White
                     ) {
                         Scaffold(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().safeDrawingPadding(),
                             topBar = {
                                 TopAppBar(
                                     title = {
@@ -257,7 +266,7 @@ class MainActivity : ComponentActivity() {
                                                     "Added on ${
                                                         SimpleDateFormat(
                                                             "dd/MM/yyyy",
-                                                            context.resources.configuration.locales[0]
+                                                            configuration.locales[0]
                                                         ).format(currentSOTD.date)
                                                     }"
                                                 else "No date",
