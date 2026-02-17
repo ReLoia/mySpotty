@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "it.reloia.myspotty"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "it.reloia.myspotty"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.2.0"
 
